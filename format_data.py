@@ -63,7 +63,7 @@ if __name__ == '__main__':
         print(
             f'{csv} has {num_rows} rows '
             f'and will be in {num_partitions} partitions '
-            f'with {num_rows_per_partition} per partition.'
+            f'with {num_rows_per_partition} rows per partition.'
         )
         df = df.select(*[get_casted_variable(c) for c in df.columns])
         output_path = os.path.join(
