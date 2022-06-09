@@ -1,6 +1,7 @@
 # kaggle-amex-default-prediction
 https://www.kaggle.com/competitions/amex-default-prediction/
 
+
 # data
 To download and unzip all files to `data`:
 ```
@@ -27,5 +28,9 @@ data
 |   |   |-- *.parquet
 ```
 
+
 # questions
-1. how much history do test ids have?
+
+## how much history do test ids have?
+About the same as train ids. Test ids have no overlap with train ids.
+See [how_much_history.ipynb](notebooks/how_much_history.ipynb).
