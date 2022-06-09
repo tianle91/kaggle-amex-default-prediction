@@ -66,8 +66,12 @@ if __name__ == '__main__':
             f'with {num_rows_per_partition} rows per partition.'
         )
         df = df.select(*[get_casted_variable(c) for c in df.columns])
-        output_path = os.path.join(
-            'data', os.path.basename(csv).replace('.csv', ''))
-        df.repartition(num_partitions).write.mode(
-            'overwrite').parquet(output_path)
+        output_path = csv.replace('.csv', '')
+        (
+            df
+            .repartition(num_partitions)
+            .write
+            .mode('overwrite')
+            .parquet(output_path)
+        )
         print(f'Wrote to {output_path}')
