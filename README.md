@@ -38,7 +38,9 @@ See [how_much_history.ipynb](notebooks/how_much_history.ipynb).
 ## label sequence for each id?
 Note that this is the description of how the targets are calculated [src](https://www.kaggle.com/competitions/amex-default-prediction/data).
 ```
-The target binary variable is calculated by observing 18 months performance window after the latest credit card statement, and if the customer does not pay due amount in 120 days after their latest statement date it is considered a default event.
+The target binary variable is calculated by observing 18 months performance window after the latest
+credit card statement, and if the customer does not pay due amount in 120 days after their latest
+statement date it is considered a default event.
 The dataset contains aggregated profile features for each customer at each statement date. 
 ```
 Time between statements has long tails.
