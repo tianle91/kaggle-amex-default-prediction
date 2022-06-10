@@ -45,5 +45,5 @@ The dataset contains aggregated profile features for each customer at each state
 ```
 Time between statements has long tails.
 The bottom 10% are less than 17 days while top 5% are 392 days.
-Number of statements are all 13 days other than the bottom 10%.
+Number of statements are 13 other than the bottom 10%, which only have 9 statements.
 See [label_sequence.ipynb](notebooks/label_sequence.ipynb).
