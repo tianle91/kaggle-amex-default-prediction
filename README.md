@@ -6,7 +6,7 @@ https://www.kaggle.com/competitions/amex-default-prediction/
 To download and unzip all files to `data`:
 ```
 kaggle competitions download -c amex-default-prediction -p data
-unzip data/amex-default-prediction.zip -d data
+unzip data/amex-default-prediction.zip -d data/amex-default-prediction
 python format_data.py
 ```
 It should end up looking like this:
