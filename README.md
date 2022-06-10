@@ -52,3 +52,7 @@ See [label_sequence.ipynb](notebooks/label_sequence.ipynb).
 ## aggregate predictions for each statement?
 
 ## predict time to default instead of binary outcome?
+
+## add date related features?
+fourier terms.
+sentiments of news articles between 30 days prior to first statement date and last statement date.
