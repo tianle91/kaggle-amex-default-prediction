@@ -1,5 +1,6 @@
 lightgbm
 matplotlib
 mlflow
+nbformat # required for plotly in notebook due to mime format support
 plotly
 SpaceTimePandas
