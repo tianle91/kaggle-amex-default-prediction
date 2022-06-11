@@ -37,6 +37,8 @@ statement date it is considered a default event.
 
 ## how much history do test ids have?
 About the same as train ids. Test ids have no overlap with train ids.
+Both train and test periods are about 13 months and the test dates follow immediately after train dates.
+However, **the dates in test not uniformly distributed over the 13 months** (as is the case for train dates) and instead oversamples the October to May period.
 See [how_much_history.ipynb](notebooks/how_much_history.ipynb).
 
 ## label sequence for each id?
