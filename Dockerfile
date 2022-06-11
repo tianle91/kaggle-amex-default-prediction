@@ -11,6 +11,7 @@ RUN echo 'alias venv="python -m venv"' >> ~/.bashrc
 # spark
 RUN apt install --no-install-recommends -y openjdk-11-jdk-headless ca-certificates-java
 RUN pip install pyspark==3.2.1
+RUN pip install pandas pyspark[sql]
 ENV PYSPARK_PYTHON=/usr/bin/python
 ENV PYSPARK_DRIVER_PYTHON=/usr/bin/python
 ENV JAVA_HOME=/usr/lib/jvm/default-java
