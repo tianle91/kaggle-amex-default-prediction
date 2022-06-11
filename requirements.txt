@@ -1,5 +1,5 @@
 lightgbm
 matplotlib
 mlflow
-pandas
+plotly
 SpaceTimePandas
