@@ -47,7 +47,9 @@ The bottom 10% are less than 17 days while top 5% are 392 days.
 Number of statements are 13 other than the bottom 10%, which only have 9 statements.
 See [label_sequence.ipynb](notebooks/label_sequence.ipynb).
 
-## performance using last statement or first statement?
+## performance using last statement?
+See [use_latest.ipynb](use_latest.ipynb).
+TODO: measure performance on something similar to test dates distribution.
 
 ## need to add aggregations across previous statements?
 
@@ -56,6 +58,7 @@ See [label_sequence.ipynb](notebooks/label_sequence.ipynb).
 ## predict time to default instead of binary outcome?
 
 ## add date related features?
-fourier terms.
-holiday terms.
-sentiments of news articles between 30 days prior to first statement date and last statement date.
+TODO:
+- fourier terms.
+- holiday terms.
+- sentiments of news articles between 30 days prior to first statement date and last statement date.
