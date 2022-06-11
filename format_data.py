@@ -4,23 +4,21 @@ from glob import glob
 import pyspark.sql.functions as F
 from pyspark.sql import SparkSession
 
-num_rows_per_partition = 1000000
-
-categorical_variables = ['B_30', 'B_38', 'D_114', 'D_116',
+CATEGORICAL_VARIABLES = ['B_30', 'B_38', 'D_114', 'D_116',
                          'D_117', 'D_120', 'D_126', 'D_63', 'D_64', 'D_66', 'D_68']
-id_variables = ['customer_ID']
-date_variables = {'S_2': 'yyyy-MM-dd'}
-target_variable = 'target'
-prediction_variable = 'prediction'
+ID_VARIABLES = ['customer_ID']
+DATE_VARIABLES = {'S_2': 'yyyy-MM-dd'}
+TARGET_VARIABLE = 'target'
+PREDICTION_VARIABLE = 'prediction'
 
 
 def get_casted_variable(s: str):
-    if s in categorical_variables or s in id_variables:
+    if s in CATEGORICAL_VARIABLES or s in ID_VARIABLES:
         return F.col(s).cast('string').alias(s)
-    elif s in date_variables:
-        return F.to_date(s, format=date_variables[s]).alias(s)
+    elif s in DATE_VARIABLES:
+        return F.to_date(s, format=DATE_VARIABLES[s]).alias(s)
     # everything else we cast to float
-    elif s in [target_variable, prediction_variable]:
+    elif s in [TARGET_VARIABLE, PREDICTION_VARIABLE]:
         pass
     elif s.startswith('D_'):
         # D_* = Delinquency variables
@@ -56,6 +54,7 @@ if __name__ == '__main__':
         .getOrCreate()
     )
 
+    num_rows_per_partition = 1000000
     for csv in csvs:
         df = spark.read.options(header=True).csv(csv)
         num_rows = df.count()
