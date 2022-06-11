@@ -1,3 +1,5 @@
+from typing import Dict, List
+
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.types import IntegerType, StringType, StructField, StructType
 
@@ -34,3 +36,27 @@ class CategoricalToIntegerEncoder:
             ])
         )
         return df.join(transformed_values, on=self.column, how='left').drop(self.column)
+
+
+class CategoricalToIntegerEncoders:
+    def __init__(self, columns: List[str]) -> None:
+        self.encoders = {
+            c: CategoricalToIntegerEncoder(column=c)
+            for c in columns
+        }
+        self.columns = columns
+        self.columns_encoded = [
+            self.encoders[c].column_encoded
+            for c in columns
+        ]
+
+    def fit(self, df: DataFrame):
+        for _, enc in self.encoders.items():
+            enc.fit(df=df)
+        return self
+
+    def transform(self, spark: SparkSession, df: DataFrame):
+        out = df
+        for encoder in self.encoders.values():
+            out = encoder.transform(spark=spark, df=out)
+        return out
