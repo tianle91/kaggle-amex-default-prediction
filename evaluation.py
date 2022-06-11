@@ -1,4 +1,6 @@
 import pandas as pd
+from lightgbm import LGBMModel
+from format_data import TARGET_VARIABLE, PREDICTION_VARIABLE
 
 def amex_metric(y_true: pd.DataFrame, y_pred: pd.DataFrame) -> float:
 
@@ -30,3 +32,11 @@ def amex_metric(y_true: pd.DataFrame, y_pred: pd.DataFrame) -> float:
     d = top_four_percent_captured(y_true, y_pred)
 
     return 0.5 * (g + d)
+
+def evaluate(X, y_true, m: LGBMModel) -> float:
+    y_true = y_true.reset_index(drop=True)
+    y_pred = m.predict_proba(X)[:, 1]
+
+    y_true = pd.DataFrame({TARGET_VARIABLE: y_true})
+    y_pred = pd.DataFrame({PREDICTION_VARIABLE: y_pred})
+    return amex_metric(y_true=y_true, y_pred=y_pred)
