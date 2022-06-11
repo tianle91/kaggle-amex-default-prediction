@@ -1,5 +1,6 @@
 import pyspark.sql.functions as F
 from pyspark.sql.window import Window
+
 from spark_utils import get_spark_session
 
 # Run format_data.py first if you haven't done so yet.
