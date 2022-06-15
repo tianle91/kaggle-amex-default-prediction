@@ -134,3 +134,6 @@ data_transformed/
 
 # os
 .DS_Store
+
+# expriments
+mlruns/
