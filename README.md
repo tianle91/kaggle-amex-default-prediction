@@ -2,6 +2,10 @@
 https://www.kaggle.com/competitions/amex-default-prediction/
 
 
+# useful
+- `mlflow ui` runs the mlflow ui at `http://127.0.0.1:5000`
+
+
 # data
 To download and unzip all files to `data`:
 ```
