@@ -1,6 +1,8 @@
 import pandas as pd
 from lightgbm import LGBMModel
-from format_data import TARGET_VARIABLE, PREDICTION_VARIABLE
+
+from format_data import PREDICTION_VARIABLE, TARGET_VARIABLE
+
 
 def amex_metric(y_true: pd.DataFrame, y_pred: pd.DataFrame) -> float:
 
