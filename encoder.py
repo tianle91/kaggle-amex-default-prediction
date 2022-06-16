@@ -1,7 +1,7 @@
-from typing import Dict, List
+from typing import List
 
+import pyspark.sql.functions as F
 from pyspark.sql import DataFrame, SparkSession
-from pyspark.sql.types import IntegerType, StringType, StructField, StructType
 
 
 class CategoricalToIntegerEncoder:
@@ -23,19 +23,13 @@ class CategoricalToIntegerEncoder:
     def transform(self, spark: SparkSession, df: DataFrame):
         if self.unique_values is None:
             raise ValueError('Not fit yet')
-        transformed_values = spark.createDataFrame(
-            data=[
-                {self.column: c, self.column_encoded: i}
-                for i, c in enumerate(self.unique_values)
-            ],
-            schema=StructType(fields=[
-                StructField(
-                    self.column, dataType=StringType(), nullable=False),
-                StructField(
-                    self.column_encoded, dataType=IntegerType(), nullable=False),
-            ])
+        mapping = {c: i for i, c in enumerate(self.unique_values)}
+        udf = F.udf(lambda s: mapping.get(s), 'integer')
+        return (
+            df
+            .withColumn(self.column_encoded, udf(self.column))
+            .drop(self.column)
         )
-        return df.join(transformed_values, on=self.column, how='left').drop(self.column)
 
 
 class CategoricalToIntegerEncoders:
