@@ -3,13 +3,13 @@ from pyspark.sql.window import Window
 
 from spark_utils import get_spark_session
 
-# Run format_data.py first if you haven't done so yet.
 spark = get_spark_session()
 window_latest_date_by_id = Window.partitionBy(
     'customer_ID').orderBy(F.col('S_2').desc())
 RANKED_S_2 = '__S_2_rank_by_latest__'
 
 if __name__ == '__main__':
+    # Run format_data.py first if you haven't done so yet.
     for p in [
         'data/amex-default-prediction/test_data',
         'data/amex-default-prediction/train_data',
