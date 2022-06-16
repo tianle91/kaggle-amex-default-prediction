@@ -13,11 +13,11 @@ class CategoricalToIntegerEncoder:
     def fit(self, df: DataFrame):
         if self.unique_values is not None:
             raise ValueError('Already fit')
-        self.unique_values = [
+        self.unique_values = sorted([
             row[self.column]
             for row in df.select(self.column).distinct().collect()
             if row[self.column] is not None
-        ]
+        ])
         return self
 
     def transform(self, spark: SparkSession, df: DataFrame):
