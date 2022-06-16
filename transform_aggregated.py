@@ -12,9 +12,6 @@ def get_mode(list_of_values) -> str:
         return str(stats.mode(list_of_values)[0][0])
 
 
-spark = get_spark_session()
-
-
 def get_aggregated(df: DataFrame) -> DataFrame:
 
     window_latest_date_by_id = (
@@ -74,6 +71,9 @@ def get_aggregated(df: DataFrame) -> DataFrame:
 
 
 if __name__ == '__main__':
+
+    spark = get_spark_session()
+
     # Run format_data.py first if you haven't done so yet.
     for p in [
         'data/amex-default-prediction/test_data',
@@ -95,3 +95,5 @@ if __name__ == '__main__':
             .parquet(out_p)
         )
         print(f'Wrote to {out_p}')
+
+    spark.stop()
