@@ -4,7 +4,8 @@ https://www.kaggle.com/competitions/amex-default-prediction/
 
 # Useful
 `mlflow ui` runs the mlflow ui at [127.0.0.1:5000](http://127.0.0.1:5000)
-`kaggle competitions submit -c amex-default-prediction -f ./mlruns/3/afcfa017b3ce4b349e159577f712357c/artifacts/submission.csv -m "afcfa017b3ce4b349e159577f712357c"`
+
+`kaggle competitions submit -c amex-default-prediction -f ./mlruns/3/afcfa017b3ce4b349e159577f712357c/artifacts/submission.csv -m "afcfa017b3ce4b349e159577f712357c"` submits a prediction for experiment `3` and run `afcfa017b3ce4b349e159577f712357c`.
 
 
 # Submissions
