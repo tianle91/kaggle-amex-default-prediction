@@ -66,8 +66,6 @@ The bottom 10% are less than 17 days while top 5% are 392 days.
 Number of statements are 13 other than the bottom 10%, which only have 9 statements.
 See [label_sequence.ipynb](notebooks/label_sequence.ipynb).
 
-## Aggregate predictions for each statement?
-
 ## Predict time to default instead of binary outcome?
 
 ## Add date related features?
