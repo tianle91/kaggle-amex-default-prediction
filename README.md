@@ -85,6 +85,4 @@ See [label_sequence.ipynb](notebooks/label_sequence.ipynb).
 
 ## Add date related features?
 TODO:
-- fourier terms.
-- holiday terms.
 - sentiments of news articles between 30 days prior to first statement date and last statement date.
