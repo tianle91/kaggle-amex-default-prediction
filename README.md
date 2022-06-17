@@ -7,12 +7,18 @@ https://www.kaggle.com/competitions/amex-default-prediction/
 
 
 # submissions
+These are taken from [kaggle submissions](https://www.kaggle.com/competitions/amex-default-prediction/submissions).
+| index | notebook                                     | score | mlflow run |
+| ----- | -------------------------------------------- | ----- | ---------- |
+| 3     | [use_aggregated.ipynb](use_aggregated.ipynb) | 0.778 | [1e0a4409d0f64b01a242d38c75df61cd](http://127.0.0.1:5000/#/experiments/2/runs/1e0a4409d0f64b01a242d38c75df61cd) |
+| 2     | [use_latest.ipynb](use_latest.ipynb)         | 0.776 | [65418e5e512a433fa7e669bbbeb18880](http://127.0.0.1:5000/#/experiments/1/runs/65418e5e512a433fa7e669bbbeb18880) |
+| 1     | sample_submission.csv                        | 0.019 | - |
 
-| notebook                                     | score | mlflow run |
-| -------------------------------------------- | ----- | ---------- |
-| [use_aggregated.ipynb](use_aggregated.ipynb) | 0.778 | [1e0a4409d0f64b01a242d38c75df61cd](http://127.0.0.1:5000/#/experiments/2/runs/1e0a4409d0f64b01a242d38c75df61cd) |
-| [use_latest.ipynb](use_latest.ipynb)         | 0.776 | [65418e5e512a433fa7e669bbbeb18880](http://127.0.0.1:5000/#/experiments/1/runs/65418e5e512a433fa7e669bbbeb18880) |
-| sample_submission.csv                        | 0.019 | - |
+## Learnings from 3
+There were roughly 3 times the original number of features from `transform_aggregated.py` due to
+aggregation but did not yield better results compared to only using the latest values.
+Similar trends can be observed from the feature importance in [1e0a4409d0f64b01a242d38c75df61cd](http://127.0.0.1:5000/#/experiments/2/runs/1e0a4409d0f64b01a242d38c75df61cd),
+where the last observed versions of the same variables dominate, with a few exceptions.
 
 
 # data
