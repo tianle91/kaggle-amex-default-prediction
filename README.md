@@ -11,7 +11,7 @@ https://www.kaggle.com/competitions/amex-default-prediction/
 These are taken from [kaggle submissions](https://www.kaggle.com/competitions/amex-default-prediction/submissions).
 | index | notebook              | score | train score | valid score | mlflow run | comments |
 | ----- | --------------------- | ----- | ----------- | ----------- | ---------- | -------- |
-| 6*    | use_latest+holiday    | 0.781 | 0.798       | 0.78        | [link](http://127.0.0.1:5000/#/experiments/4/runs/8cc58c1faa8a41ed8ec683f1a0fda6c9) | `postive_label_multiplicative_factor = 1./20.` |
+| 6*    | use_latest+holiday    | 0.781 | 0.798       | 0.78        | [link](http://127.0.0.1:5000/#/experiments/4/runs/8cc58c1faa8a41ed8ec683f1a0fda6c9) | `postive_label_multiplicative_factor = 0.05` |
 | 5     | use_latest+fourier    | 0.776 | 0.794       | 0.775       | [link](http://127.0.0.1:5000/#/experiments/3/runs/afcfa017b3ce4b349e159577f712357c) | `num_boost_round=200` |
 | 4     | use_latest            | 0.773 | 0.779       | 0.777       | [link](http://127.0.0.1:5000/#/experiments/1/runs/74f0f2084c1243788e52c3655f141a35) | `is_unbalance=True` |
 | 3*    | use_aggregated        | 0.778 | 0.79        | 0.775       | [link](http://127.0.0.1:5000/#/experiments/2/runs/1e0a4409d0f64b01a242d38c75df61cd) | - |
