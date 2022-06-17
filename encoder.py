@@ -3,6 +3,7 @@ from typing import List
 import pandas as pd
 import pyspark.sql.functions as F
 from pyspark.sql import DataFrame, SparkSession
+from stpd.event import Holiday
 from stpd.fourier import Fourier
 
 
@@ -63,6 +64,34 @@ class FourierFeatures:
         self.column = column
         self.column_encoded = f'{self.column}_FourierFeatures'
         self.f = Fourier(**fourier_kwargs)
+
+    def fit(self, df: DataFrame):
+        return self
+
+    def transform(self, spark: SparkSession, df: DataFrame):
+        features_df = spark.createDataFrame(pd.DataFrame([
+            {
+                self.column: row[self.column],
+                **{
+                    f'{self.column_encoded}_{k}': v
+                    for k, v in self.f(row[self.column]).items()
+                }
+            }
+            for row in df.select(self.column).distinct().collect()
+            if row[self.column] is not None
+        ]))
+        return (
+            df
+            .join(features_df, on=self.column, how='left')
+            .drop(self.column)
+        )
+
+
+class HolidayFeatures:
+    def __init__(self, column: str, **holiday_kwargs):
+        self.column = column
+        self.column_encoded = f'{self.column}_HolidayFeatures'
+        self.f = Holiday(**holiday_kwargs)
 
     def fit(self, df: DataFrame):
         return self
