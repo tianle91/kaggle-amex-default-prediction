@@ -24,11 +24,11 @@ def get_aggregated(df: DataFrame) -> DataFrame:
         )
     )
 
-    selected_columns = []
+    generic_selected = []
     for c in df.columns:
         if c in ['customer_ID', 'S_2']:
             continue
-        selected_columns += [
+        generic_selected += [
             # keep this for aggregation later
             c,
             # these are ordered by statement date
@@ -36,21 +36,21 @@ def get_aggregated(df: DataFrame) -> DataFrame:
             F.last(c).over(window_latest_date_by_id).alias(f'{c}_last'),
         ]
 
-    agg_columns = []
+    generic_aggregated = []
     for c in df.columns:
         if c in ['customer_ID', 'S_2']:
             continue
-        agg_columns += [
+        generic_aggregated += [
             # don't do anything to these
             F.first(f'{c}_first').alias(f'{c}_first'),
             F.first(f'{c}_last').alias(f'{c}_last'),
         ]
         # aggregation varies depending on data type
         if isinstance(df.schema[c].dataType, StringType):
-            agg_columns.append(F.udf(get_mode, 'string')(
+            generic_aggregated.append(F.udf(get_mode, 'string')(
                 F.collect_list(c)).alias(f'{c}_mode'))
         elif isinstance(df.schema[c].dataType, FloatType):
-            agg_columns.append(F.mean(c).alias(f'{c}_mean'))
+            generic_aggregated.append(F.mean(c).alias(f'{c}_mean'))
         else:
             raise ValueError(
                 f'Unexpected {c} due to {df.schema[c].dataType} not being string or float')
@@ -60,12 +60,12 @@ def get_aggregated(df: DataFrame) -> DataFrame:
             'customer_ID',
             F.first('S_2').over(window_latest_date_by_id).alias('S_2_first'),
             F.last('S_2').over(window_latest_date_by_id).alias('S_2_last'),
-            *selected_columns
+            *generic_selected
         )
         .groupBy('customer_ID', 'S_2_first', 'S_2_last')
         .agg(
             F.count('*').alias('num_statements'),
-            *agg_columns
+            *generic_aggregated
         )
     )
 
