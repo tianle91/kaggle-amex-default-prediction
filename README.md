@@ -11,11 +11,21 @@ https://www.kaggle.com/competitions/amex-default-prediction/
 These are taken from [kaggle submissions](https://www.kaggle.com/competitions/amex-default-prediction/submissions).
 | index | notebook              | score | train score | valid score | mlflow run | comments |
 | ----- | --------------------- | ----- | ----------- | ----------- | ---------- | -------- |
+| 6     | use_latest+holiday    | 0.781 | 0.798       | 0.78        | [link](http://127.0.0.1:5000/#/experiments/4/runs/8cc58c1faa8a41ed8ec683f1a0fda6c9) | `postive_label_multiplicative_factor = 1./20.` |
 | 5     | use_latest+fourier    | 0.776 | 0.794       | 0.775       | [link](http://127.0.0.1:5000/#/experiments/3/runs/afcfa017b3ce4b349e159577f712357c) | `num_boost_round=200` |
 | 4     | use_latest            | 0.773 | 0.779       | 0.777       | [link](http://127.0.0.1:5000/#/experiments/1/runs/74f0f2084c1243788e52c3655f141a35) | `is_unbalance=True` |
 | 3     | use_aggregated        | 0.778 | 0.79        | 0.775       | [link](http://127.0.0.1:5000/#/experiments/2/runs/1e0a4409d0f64b01a242d38c75df61cd) | - |
 | 2     | use_latest            | 0.776 | 0.786       | 0.774       | [link](http://127.0.0.1:5000/#/experiments/1/runs/65418e5e512a433fa7e669bbbeb18880) | - |
 | 1     | sample_submission.csv | 0.019 | -           | -           | - | default prediction is all 0 |
+
+## Learnings from 6
+Primarily the improvement didn't come from new features.
+The difference between [the previous run](http://127.0.0.1:5000/#/experiments/4/runs/00a14359371847ae9c724d840d06111e)
+and [the submitted run](http://127.0.0.1:5000/#/experiments/4/runs/8cc58c1faa8a41ed8ec683f1a0fda6c9)
+is `postive_label_multiplicative_factor`.
+The previous run set this to 1 whereas the submitted run is 0.05.
+Setting it to 0.05 forces equal weights for both positive and negative labels, which is the primary
+factor behind the improvement.
 
 ## Learnings from 3
 There were roughly 3 times the original number of features from `transform_aggregated.py` due to
