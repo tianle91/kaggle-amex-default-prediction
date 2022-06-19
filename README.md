@@ -29,7 +29,6 @@ scores over all the values in the middle of the range, with train scores ~0.8 an
 This is similar to results from the previous iteration, where the equivalent `negative_label_weight`
 was 1.
 
-
 ## Learnings from 6
 Primarily the improvement didn't come from new features.
 The difference between [the previous run](http://127.0.0.1:5000/#/experiments/4/runs/00a14359371847ae9c724d840d06111e)
@@ -41,7 +40,6 @@ factor behind the improvement.
 
 Update: Note that setting `postive_label_multiplicative_factor` to 0.05 causes oversampling of
 negative labels by 20 times in pre-subsampled training because it was subsampled at 5%.
-
 
 ## Learnings from 3
 There were roughly 3 times the original number of features from `transform_aggregated.py` due to
