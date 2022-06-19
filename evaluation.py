@@ -18,6 +18,7 @@ def amex_metric(y_true: pd.DataFrame, y_pred: pd.DataFrame) -> float:
     def weighted_gini(y_true: pd.DataFrame, y_pred: pd.DataFrame) -> float:
         df = (pd.concat([y_true, y_pred], axis='columns')
               .sort_values('prediction', ascending=False))
+        # Note that the negative class has been subsampled for this dataset at 5%, and thus receives a 20x weighting in the scoring metric.
         df['weight'] = df['target'].apply(lambda x: 20 if x==0 else 1)
         df['random'] = (df['weight'] / df['weight'].sum()).cumsum()
         total_pos = (df['target'] * df['weight']).sum()
