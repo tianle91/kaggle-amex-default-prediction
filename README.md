@@ -5,21 +5,30 @@ https://www.kaggle.com/competitions/amex-default-prediction/
 # Useful
 `mlflow ui` runs the mlflow ui at [127.0.0.1:5000](http://127.0.0.1:5000)
 
-`kaggle competitions submit -c amex-default-prediction -f ./mlruns/3/afcfa017b3ce4b349e159577f712357c/artifacts/submission.csv -m "afcfa017b3ce4b349e159577f712357c"` submits a prediction for experiment `3` and run `afcfa017b3ce4b349e159577f712357c`.
+`kaggle competitions submit -c amex-default-prediction -f ./mlruns/3/afcfa017b3ce4b349e159577f712357c/artifacts/submission.csv -m "afcfa017b3ce4b349e159577f712357c"`
 
 
 # Submissions
 These are taken from [kaggle submissions](https://www.kaggle.com/competitions/amex-default-prediction/submissions).
-| index | notebook              | score | train score | valid score | mlflow run | comments |
-| ----- | --------------------- | ----- | ----------- | ----------- | ---------- | -------- |
-| 6*    | use_latest+holiday    | 0.781 | 0.798       | 0.78        | [link](http://127.0.0.1:5000/#/experiments/4/runs/8cc58c1faa8a41ed8ec683f1a0fda6c9) | `postive_label_multiplicative_factor = 0.05` |
-| 5     | use_latest+fourier    | 0.776 | 0.794       | 0.775       | [link](http://127.0.0.1:5000/#/experiments/3/runs/afcfa017b3ce4b349e159577f712357c) | `num_boost_round=200` |
-| 4     | use_latest            | 0.773 | 0.779       | 0.777       | [link](http://127.0.0.1:5000/#/experiments/1/runs/74f0f2084c1243788e52c3655f141a35) | `is_unbalance=True` |
-| 3*    | use_aggregated        | 0.778 | 0.79        | 0.775       | [link](http://127.0.0.1:5000/#/experiments/2/runs/1e0a4409d0f64b01a242d38c75df61cd) | - |
-| 2     | use_latest            | 0.776 | 0.786       | 0.774       | [link](http://127.0.0.1:5000/#/experiments/1/runs/65418e5e512a433fa7e669bbbeb18880) | - |
-| 1     | sample_submission.csv | 0.019 | -           | -           | - | default prediction is all 0 |
+| index | notebook                     | score | train score | valid score | mlflow run | comments |
+| ----- | ---------------------------- | ----- | ----------- | ----------- | ---------- | -------- |
+| 7*    | use_latest_tune_label_weight | 0.780 | 0.8         | 0.783       | [link](http://127.0.0.1:5000/#/experiments/5/runs/aa3e8418ec5140da995a36e4830290c5) | `negative_label_weight=2.009`achieved best valid score |
+| 6*    | use_latest+holiday           | 0.781 | 0.798       | 0.78        | [link](http://127.0.0.1:5000/#/experiments/4/runs/8cc58c1faa8a41ed8ec683f1a0fda6c9) | `postive_label_multiplicative_factor = 0.05` |
+| 5     | use_latest+fourier           | 0.776 | 0.794       | 0.775       | [link](http://127.0.0.1:5000/#/experiments/3/runs/afcfa017b3ce4b349e159577f712357c) | `num_boost_round=200` |
+| 4     | use_latest                   | 0.773 | 0.779       | 0.777       | [link](http://127.0.0.1:5000/#/experiments/1/runs/74f0f2084c1243788e52c3655f141a35) | `is_unbalance=True` |
+| 3*    | use_aggregated               | 0.778 | 0.79        | 0.775       | [link](http://127.0.0.1:5000/#/experiments/2/runs/1e0a4409d0f64b01a242d38c75df61cd) | - |
+| 2     | use_latest                   | 0.776 | 0.786       | 0.774       | [link](http://127.0.0.1:5000/#/experiments/1/runs/65418e5e512a433fa7e669bbbeb18880) | - |
+| 1     | sample_submission.csv        | 0.019 | -           | -           | - | default prediction is all 0 |
 
 \* Indicates that there is attached commentary.
+
+## Learnings from 7
+A grid search over `negative_label_weight` from 0.01 to 20 resulted very similar train and valid
+scores over all the values in the middle of the range, with train scores ~0.8 and valid scores
+~0.78.
+This is similar to results from the previous iteration, where the equivalent `negative_label_weight`
+was 1.
+
 
 ## Learnings from 6
 Primarily the improvement didn't come from new features.
@@ -29,6 +38,10 @@ is `postive_label_multiplicative_factor`.
 The previous run set this to 1 whereas the submitted run is 0.05.
 Setting it to 0.05 forces equal weights for both positive and negative labels, which is the primary
 factor behind the improvement.
+
+Update: Note that setting `postive_label_multiplicative_factor` to 0.05 causes oversampling of
+negative labels by 20 times in pre-subsampled training because it was subsampled at 5%.
+
 
 ## Learnings from 3
 There were roughly 3 times the original number of features from `transform_aggregated.py` due to
