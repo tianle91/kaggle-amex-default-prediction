@@ -97,6 +97,7 @@ See [label_sequence.ipynb](notebooks/label_sequence.ipynb).
 ## Predict time to default instead of binary outcome?
 Neural network not doing a great job, need to fill the Nones. 
 Predicted scale are degenerate with little separation between defaulted and non-defaulted.
+See [exploss](exploss.ipynb).
 
 ## Add date related features?
 TODO:
