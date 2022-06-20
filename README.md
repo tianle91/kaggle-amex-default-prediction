@@ -94,6 +94,7 @@ Number of statements are 13 other than the bottom 10%, which only have 9 stateme
 See [label_sequence.ipynb](notebooks/label_sequence.ipynb).
 
 ## Predict time to default instead of binary outcome?
+Neural network not doing a great job, need to fill the Nones. 
 
 ## Add date related features?
 TODO:
@@ -101,3 +102,4 @@ TODO:
 
 ## Would KNNImputer improve performance?
 [KNNImputer](https://scikit-learn.org/stable/modules/generated/sklearn.impute.KNNImputer.html)
+Try with `use_latest`.
