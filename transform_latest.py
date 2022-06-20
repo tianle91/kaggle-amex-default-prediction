@@ -3,16 +3,12 @@ from pyspark.sql.window import Window
 
 from spark_utils import get_spark_session
 
-RANKED_S_2 = '__S_2_rank_by_latest__'
+S_2_max = 'S_2_max'
 
 if __name__ == '__main__':
 
     spark = get_spark_session()
-    window_latest_date_by_id = (
-        Window
-        .partitionBy('customer_ID')
-        .orderBy(F.col('S_2').desc())
-    )
+    window = Window.partitionBy('customer_ID').orderBy(F.col('S_2'))
 
     # Run format_data.py first if you haven't done so yet.
     for p in [
@@ -24,9 +20,10 @@ if __name__ == '__main__':
         num_parts = df.rdd.getNumPartitions()
         df = (
             df
-            .withColumn(RANKED_S_2, F.rank().over(window_latest_date_by_id))
-            .filter(F.col(RANKED_S_2) == 1)
-            .drop(RANKED_S_2)
+            .withColumn(S_2_max, F.max('S_2').over(window))
+            .withColumn('num_statements', F.count('*').over(window))
+            .filter(F.col(S_2_max) == F.col('S_2'))
+            .drop(S_2_max)
         )
         out_p = (
             p
