@@ -4,11 +4,12 @@ from lightgbm import LGBMModel
 from format_data import PREDICTION_VARIABLE, TARGET_VARIABLE
 
 
-def amex_metric(y_true: pd.DataFrame, y_pred: pd.DataFrame) -> float:
+def _amex_metric(y_true: pd.DataFrame, y_pred: pd.DataFrame) -> float:
 
     def top_four_percent_captured(y_true: pd.DataFrame, y_pred: pd.DataFrame) -> float:
         df = (pd.concat([y_true, y_pred], axis='columns')
               .sort_values('prediction', ascending=False))
+        # Note that the negative class has been subsampled for this dataset at 5%, and thus receives a 20x weighting in the scoring metric.
         df['weight'] = df['target'].apply(lambda x: 20 if x==0 else 1)
         four_pct_cutoff = int(0.04 * df['weight'].sum())
         df['weight_cumsum'] = df['weight'].cumsum()
@@ -34,9 +35,9 @@ def amex_metric(y_true: pd.DataFrame, y_pred: pd.DataFrame) -> float:
     g = normalized_weighted_gini(y_true, y_pred)
     d = top_four_percent_captured(y_true, y_pred)
 
-    return 0.5 * (g + d)
+    return 0.5 * (g + d), g, d
 
-def evaluate(y_true, y_pred) -> float:
+def amex_metric(y_true, y_pred) -> float:
     y_true = pd.DataFrame({TARGET_VARIABLE: y_true})
     y_pred = pd.DataFrame({PREDICTION_VARIABLE: y_pred})
-    return amex_metric(y_true=y_true, y_pred=y_pred)
+    return _amex_metric(y_true=y_true, y_pred=y_pred)
