@@ -44,19 +44,19 @@ def amex_metric(y_true, y_pred) -> float:
     return _amex_metric(y_true=y_true, y_pred=y_pred)
 
 
-# https://github.com/microsoft/LightGBM/blob/2f5baa3d39efb518cd13a7932fe4d8602c36762f/python-package/lightgbm/engine.py#L54-L71
+# https://lightgbm.readthedocs.io/en/latest/pythonapi/lightgbm.LGBMClassifier.html
 # return eval_name, eval_result, is_higher_better
 
-def feval_amex(preds, eval_data: Dataset):
-    eval_result, _, _ = amex_metric(y_true=eval_data.label, y_pred=preds)
+def feval_amex(y_true, y_pred):
+    eval_result, _, _ = amex_metric(y_true=y_true, y_pred=y_pred)
     return 'amex', eval_result, True
 
 
-def feval_amex_gini(preds, eval_data: Dataset):
-    _, eval_result, _ = amex_metric(y_true=eval_data.label, y_pred=preds)
+def feval_amex_gini(y_true, y_pred):
+    _, eval_result, _ = amex_metric(y_true=y_true, y_pred=y_pred)
     return 'amex_gini', eval_result, True
 
 
-def feval_amex_top4(preds, eval_data: Dataset):
-    _, _, eval_result = amex_metric(y_true=eval_data.label, y_pred=preds)
+def feval_amex_top4(y_true, y_pred):
+    _, _, eval_result = amex_metric(y_true=y_true, y_pred=y_pred)
     return 'amex_top4', eval_result, True
