@@ -95,6 +95,7 @@ See [label_sequence.ipynb](notebooks/label_sequence.ipynb).
 
 ## Predict time to default instead of binary outcome?
 Neural network not doing a great job, need to fill the Nones. 
+Predicted scale are degenerate with little separation between defaulted and non-defaulted.
 
 ## Add date related features?
 TODO:
@@ -102,4 +103,11 @@ TODO:
 
 ## Would KNNImputer improve performance?
 [KNNImputer](https://scikit-learn.org/stable/modules/generated/sklearn.impute.KNNImputer.html)
-Try with `use_latest`.
+This takes too long, more than 4 hours for train dataset!
+We need something more scalable (KNNImputer was only using a single thread).
+
+## Imputing labels
+[v2_impute_labels](v2_impute_labels.ipynb)
+Applying the default status to all statements didn't improve results (valid set score 0.77).
+Applying non-default to statements prior to latest statement gave much worse scores on validation
+dataset compared to `use_latest.ipynb` (valid set score 0.67).
