@@ -98,3 +98,6 @@ See [label_sequence.ipynb](notebooks/label_sequence.ipynb).
 ## Add date related features?
 TODO:
 - sentiments of news articles between 30 days prior to first statement date and last statement date.
+
+## Would KNNImputer improve performance?
+[KNNImputer](https://scikit-learn.org/stable/modules/generated/sklearn.impute.KNNImputer.html)
