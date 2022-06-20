@@ -96,26 +96,17 @@ if __name__ == '__main__':
         )
         print(f'Wrote to {out_p}')
 
+        df_aggregated = spark.read.parquet(out_p)
+        assert df_aggregated.count() == df_aggregated.select('customer_ID').distinct().count()
+
+
     # validations
-    test_data = spark.read.parquet(
-        'data_transformed/amex-default-prediction/test_data_aggregated')
-    train_data = spark.read.parquet(
-        'data_transformed/amex-default-prediction/train_data_aggregated')
-    train_labels = spark.read.parquet(
-        'data/amex-default-prediction/train_labels')
-    sample_submission = spark.read.parquet(
-        'data/amex-default-prediction/sample_submission')
+    test_data = spark.read.parquet('data_transformed/amex-default-prediction/test_data_aggregated')
+    train_data = spark.read.parquet('data_transformed/amex-default-prediction/train_data_aggregated')
+    train_labels = spark.read.parquet('data/amex-default-prediction/train_labels')
+    sample_submission = spark.read.parquet('data/amex-default-prediction/sample_submission')
 
-    assert train_data.count() == train_data.select('customer_ID').distinct().count()
-    assert train_labels.count() == train_labels.select(
-        'customer_ID').distinct().count()
-    assert train_data.count() == train_data.join(
-        train_labels, on='customer_ID', how='inner').count()
-
-    assert test_data.count() == test_data.select('customer_ID').distinct().count()
-    assert sample_submission.count() == sample_submission.select(
-        'customer_ID').distinct().count()
-    assert test_data.count() == test_data.join(
-        sample_submission, on='customer_ID', how='inner').count()
+    assert train_data.count() == train_data.join(train_labels, on='customer_ID', how='inner').count()
+    assert test_data.count() == test_data.join(sample_submission, on='customer_ID', how='inner').count()
 
     spark.stop()

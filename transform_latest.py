@@ -8,7 +8,15 @@ S_2_max = 'S_2_max'
 if __name__ == '__main__':
 
     spark = get_spark_session()
-    window = Window.partitionBy('customer_ID').orderBy(F.col('S_2'))
+    window = (
+        Window
+        .partitionBy('customer_ID')
+        .orderBy(F.col('S_2'))
+        .rangeBetween(
+            Window.unboundedPreceding,
+            Window.unboundedFollowing,
+        )
+    )
 
     # Run format_data.py first if you haven't done so yet.
     for p in [
@@ -18,7 +26,8 @@ if __name__ == '__main__':
         print(f'Filtering for latest statement for {p}')
         df = spark.read.parquet(p)
         num_parts = df.rdd.getNumPartitions()
-        df = (
+
+        df_latest = (
             df
             .withColumn(S_2_max, F.max('S_2').over(window))
             .withColumn('num_statements', F.count('*').over(window))
@@ -31,7 +40,7 @@ if __name__ == '__main__':
             .replace('_data', '_data_latest')
         )
         (
-            df
+            df_latest
             .repartition(num_parts)
             .write
             .mode('overwrite')
@@ -39,26 +48,16 @@ if __name__ == '__main__':
         )
         print(f'Wrote to {out_p}')
 
+        df_latest = spark.read.parquet(out_p)
+        assert df_latest.count() == df_latest.select('customer_ID').distinct().count()
+
     # validations
-    test_data = spark.read.parquet(
-        'data_transformed/amex-default-prediction/test_data_latest')
-    train_data = spark.read.parquet(
-        'data_transformed/amex-default-prediction/train_data_latest')
-    train_labels = spark.read.parquet(
-        'data/amex-default-prediction/train_labels')
-    sample_submission = spark.read.parquet(
-        'data/amex-default-prediction/sample_submission')
-
-    assert train_data.count() == train_data.select('customer_ID').distinct().count()
-    assert train_labels.count() == train_labels.select(
-        'customer_ID').distinct().count()
-    assert train_data.count() == train_data.join(
-        train_labels, on='customer_ID', how='inner').count()
-
-    assert test_data.count() == test_data.select('customer_ID').distinct().count()
-    assert sample_submission.count() == sample_submission.select(
-        'customer_ID').distinct().count()
-    assert test_data.count() == test_data.join(
-        sample_submission, on='customer_ID', how='inner').count()
+    test_data = spark.read.parquet('data_transformed/amex-default-prediction/test_data_latest')
+    train_data = spark.read.parquet('data_transformed/amex-default-prediction/train_data_latest')
+    train_labels = spark.read.parquet('data/amex-default-prediction/train_labels')
+    sample_submission = spark.read.parquet('data/amex-default-prediction/sample_submission')
+    
+    assert train_data.count() == train_data.join(train_labels, on='customer_ID', how='inner').count()
+    assert test_data.count() == test_data.join(sample_submission, on='customer_ID', how='inner').count()
 
     spark.stop()
