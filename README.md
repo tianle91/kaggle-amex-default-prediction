@@ -12,6 +12,7 @@ https://www.kaggle.com/competitions/amex-default-prediction/
 These are taken from [kaggle submissions](https://www.kaggle.com/competitions/amex-default-prediction/submissions).
 | index | notebook                     | score | train score | valid score | mlflow run | comments |
 | ----- | ---------------------------- | ----- | ----------- | ----------- | ---------- | -------- |
+| 9*    | v2_aggregated                | 0.578 | 0.825       | 0.786       | [link](http://127.0.0.1:5000/#/experiments/7/runs/a4afb732fa744b81b8e3163f9af307b0) | new aggregated features, new batched prediction method |
 | 8*    | v2_aggregated                | 0.783 | -           | 0.782       | [link](http://127.0.0.1:5000/#/experiments/7/runs/0261ff0b99024adc88cd4b8566e2a4d1) | - |
 | 7*    | use_latest_tune_label_weight | 0.780 | 0.8         | 0.783       | [link](http://127.0.0.1:5000/#/experiments/5/runs/aa3e8418ec5140da995a36e4830290c5) | `negative_label_weight=2.009`achieved best valid score |
 | 6*    | use_latest+holiday           | 0.781 | 0.798       | 0.78        | [link](http://127.0.0.1:5000/#/experiments/4/runs/8cc58c1faa8a41ed8ec683f1a0fda6c9) | `postive_label_multiplicative_factor = 0.05` |
@@ -22,6 +23,10 @@ These are taken from [kaggle submissions](https://www.kaggle.com/competitions/am
 | 1     | sample_submission.csv        | 0.019 | -           | -           | - | default prediction is all 0 |
 
 \* Indicates that there is attached commentary.
+
+## Learnings from 9
+Same notebook but new aggregated features, new batched prediction method.
+Predicted binary instead of raw scores.
 
 ## Learnings from 8
 The main difference from 3 is that here we do not set label weights.
