@@ -39,6 +39,7 @@ def get_window_features(df: DataFrame) -> DataFrame:
             how='inner',
         )
         .filter(F.col('S_2') == F.col('S_2_last'))
+        .drop('S_2_last')
     )
     df_windowed_features = df_windowed_features.select(
         *df_windowed_features.columns,
