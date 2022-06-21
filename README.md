@@ -23,6 +23,9 @@ These are taken from [kaggle submissions](https://www.kaggle.com/competitions/am
 
 \* Indicates that there is attached commentary.
 
+## Learnings from 8
+The main difference from 3 is that here we do not set label weights.
+
 ## Learnings from 7
 A grid search over `negative_label_weight` from 0.01 to 20 resulted very similar train and valid
 scores over all the values in the middle of the range, with train scores ~0.8 and valid scores
