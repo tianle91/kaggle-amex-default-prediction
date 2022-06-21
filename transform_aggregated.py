@@ -41,13 +41,13 @@ def get_window_features(df: DataFrame) -> DataFrame:
         .filter(F.col('S_2') == F.col('S_2_last'))
         .drop('S_2_last')
     )
-    df_windowed_features = df_windowed_features.select(
-        *df_windowed_features.columns,
-        *[
-            (F.col(f'{c}_previous') != F.col(c)).alias(f'{c}_changed')
-            for c in df.columns if c not in ['customer_ID', 'S_2']
-        ]
-    )
+    # df_windowed_features = df_windowed_features.select(
+    #     *df_windowed_features.columns,
+    #     *[
+    #         (F.col(f'{c}_previous') != F.col(c)).alias(f'{c}_changed')
+    #         for c in df.columns if c not in ['customer_ID', 'S_2']
+    #     ]
+    # )
     return df_windowed_features
 
 
@@ -66,8 +66,9 @@ def get_summary_features(df: DataFrame) -> DataFrame:
             ]
         elif isinstance(df.schema[c].dataType, FloatType):
             generic_aggregated += [
-                F.mean(c).alias(f'{c}_min'),
-                F.mean(c).alias(f'{c}_max'),
+                # F.min(c).alias(f'{c}_min'),
+                F.max(c).alias(f'{c}_max'),
+                F.mean(c).alias(f'{c}_mean'),
             ]
         else:
             raise ValueError(
@@ -80,16 +81,16 @@ def get_summary_features(df: DataFrame) -> DataFrame:
             *generic_aggregated,
         )
     )
-    df_aggregated_features = (
-        df_aggregated_features
-        .select(
-            *df_aggregated_features.columns,
-            *[
-                (F.col('num_statements') - F.col(f'{c}_num_unique')).alias(f'{c}_num_duplicates')
-                for c in df.columns if c not in ['customer_ID', 'S_2']
-            ]
-        )
-    )
+    # df_aggregated_features = (
+    #     df_aggregated_features
+    #     .select(
+    #         *df_aggregated_features.columns,
+    #         *[
+    #             (F.col('num_statements') - F.col(f'{c}_num_unique')).alias(f'{c}_num_duplicates')
+    #             for c in df.columns if c not in ['customer_ID', 'S_2']
+    #         ]
+    #     )
+    # )
     return df_aggregated_features
 
 
