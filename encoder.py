@@ -83,7 +83,7 @@ class FourierFeatures:
         return (
             df
             .join(features_df, on=self.column, how='left')
-            .drop(self.column)
+            # .drop(self.column)
         )
 
 
@@ -111,5 +111,5 @@ class HolidayFeatures:
         return (
             df
             .join(features_df, on=self.column, how='left')
-            .drop(self.column)
+            # .drop(self.column)
         )
