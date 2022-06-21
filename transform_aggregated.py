@@ -12,18 +12,8 @@ def get_mode(list_of_values) -> str:
         return str(stats.mode(list_of_values)[0][0])
 
 
-def get_aggregated(df: DataFrame) -> DataFrame:
-
-    window_latest_date_by_id = (
-        Window
-        .partitionBy('customer_ID')
-        .orderBy(F.col('S_2'))
-        .rowsBetween(
-            Window.unboundedPreceding,
-            Window.unboundedFollowing,
-        )
-    )
-
+def get_window_features(df: DataFrame) -> DataFrame:
+    window = Window.partitionBy('customer_ID').orderBy(F.col('S_2'))
     generic_selected = []
     for c in df.columns:
         if c in ['customer_ID', 'S_2']:
@@ -31,42 +21,84 @@ def get_aggregated(df: DataFrame) -> DataFrame:
         generic_selected += [
             # keep this for aggregation later
             c,
-            # these are ordered by statement date
-            F.first(c).over(window_latest_date_by_id).alias(f'{c}_first'),
-            F.last(c).over(window_latest_date_by_id).alias(f'{c}_last'),
+            F.lag(c, offset=-1, default=None).over(window).alias(f'{c}_previous'),
         ]
+    df_windowed_features = (
+        df
+        .select(
+            'customer_ID',
+            'S_2',
+            F.datediff(
+                'S_2', F.lag('S_2', offset=-1).over(window)
+            ).alias('S_2_days_since_previous'),
+            *generic_selected
+        )
+        .join(
+            df.groupBy('customer_ID').agg(F.max('S_2').alias('S_2_last')),
+            on='customer_ID',
+            how='inner',
+        )
+        .filter(F.col('S_2') == F.col('S_2_last'))
+    )
+    df_windowed_features = df_windowed_features.select(
+        *df_windowed_features.columns,
+        *[
+            (F.col(f'{c}_previous') != F.col(c)).alias(f'{c}_changed')
+            for c in df.columns if c not in ['customer_ID', 'S_2']
+        ]
+    )
+    return df_windowed_features
 
+
+def get_summary_features(df: DataFrame) -> DataFrame:
     generic_aggregated = []
     for c in df.columns:
         if c in ['customer_ID', 'S_2']:
             continue
         generic_aggregated += [
-            # don't do anything to these
-            F.first(f'{c}_first').alias(f'{c}_first'),
-            F.first(f'{c}_last').alias(f'{c}_last'),
+            F.size(F.collect_set(c)).alias(f'{c}_num_unique'),
         ]
         # aggregation varies depending on data type
         if isinstance(df.schema[c].dataType, StringType):
-            generic_aggregated.append(F.udf(get_mode, 'string')(
-                F.collect_list(c)).alias(f'{c}_mode'))
+            generic_aggregated += [
+                F.udf(get_mode, 'string')(F.collect_list(c)).alias(f'{c}_mode')
+            ]
         elif isinstance(df.schema[c].dataType, FloatType):
-            generic_aggregated.append(F.mean(c).alias(f'{c}_mean'))
+            generic_aggregated += [
+                F.mean(c).alias(f'{c}_min'),
+                F.mean(c).alias(f'{c}_max'),
+            ]
         else:
             raise ValueError(
                 f'Unexpected {c} due to {df.schema[c].dataType} not being string or float')
-
-    return (
-        df.select(
-            'customer_ID',
-            F.first('S_2').over(window_latest_date_by_id).alias('S_2_first'),
-            F.last('S_2').over(window_latest_date_by_id).alias('S_2_last'),
-            *generic_selected
-        )
-        .groupBy('customer_ID', 'S_2_first', 'S_2_last')
+    df_aggregated_features = (
+        df
+        .groupBy('customer_ID')
         .agg(
             F.count('*').alias('num_statements'),
-            *generic_aggregated
+            *generic_aggregated,
         )
+    )
+    df_aggregated_features = (
+        df_aggregated_features
+        .select(
+            *df_aggregated_features.columns,
+            *[
+                (F.col('num_statements') - F.col(f'{c}_num_unique')).alias(f'{c}_num_duplicates')
+                for c in df.columns if c not in ['customer_ID', 'S_2']
+            ]
+        )
+    )
+    return df_aggregated_features
+
+
+def get_transformed(df: DataFrame) -> DataFrame:
+    df_windowed_features = get_window_features(df)
+    df_aggregated_features = get_summary_features(df)
+    return df_windowed_features.join(
+        df_aggregated_features,
+        on='customer_ID',
+        how='inner',
     )
 
 
@@ -88,7 +120,7 @@ if __name__ == '__main__':
             .replace('_data', '_data_aggregated')
         )
         (
-            get_aggregated(df)
+            get_transformed(df)
             .repartition(num_parts)
             .write
             .mode('overwrite')
