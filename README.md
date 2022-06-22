@@ -28,6 +28,8 @@ These are taken from [kaggle submissions](https://www.kaggle.com/competitions/am
 ## Learnings from 9
 Same notebook but new aggregated features, new batched prediction method.
 Predicted binary instead of raw scores, which has been fixed in 9b.
+A lot of max and mean variables made it to the top of the importance charts, which are new compared
+to 8.
 
 ## Learnings from 8
 The difference from 3 (also use_aggregated) is that here we do not set label weights.
