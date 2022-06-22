@@ -30,7 +30,8 @@ Same notebook but new aggregated features, new batched prediction method.
 Predicted binary instead of raw scores, which has been fixed in 9b.
 
 ## Learnings from 8
-The main difference from 3 is that here we do not set label weights.
+The difference from 3 (also use_aggregated) is that here we do not set label weights.
+Improvement from 7 mainly comes from more features.
 
 ## Learnings from 7
 A grid search over `negative_label_weight` from 0.01 to 20 resulted very similar train and valid
