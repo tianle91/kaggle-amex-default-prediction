@@ -1,24 +1,24 @@
 import os
 from glob import glob
 
+import pandas as pd
 import pyspark.sql.functions as F
 from pyspark.sql import SparkSession
 
-CATEGORICAL_VARIABLES = ['B_30', 'B_38', 'D_114', 'D_116',
-                         'D_117', 'D_120', 'D_126', 'D_63', 'D_64', 'D_66', 'D_68']
+CATEGORICAL_VARIABLES = [
+    'B_30', 'B_38', 'D_114', 'D_116', 'D_117', 'D_120', 'D_126', 'D_63', 'D_64', 'D_66', 'D_68']
 ID_VARIABLES = ['customer_ID']
 DATE_VARIABLES = {'S_2': 'yyyy-MM-dd'}
 TARGET_VARIABLE = 'target'
 PREDICTION_VARIABLE = 'prediction'
 
-
-def get_casted_variable(s: str):
-    if s in CATEGORICAL_VARIABLES or s in ID_VARIABLES:
-        return F.col(s).cast('string').alias(s)
-    elif s in DATE_VARIABLES:
-        return F.to_date(s, format=DATE_VARIABLES[s]).alias(s)
-    # everything else we cast to float
-    elif s in [TARGET_VARIABLE, PREDICTION_VARIABLE]:
+train_data_head = pd.read_csv(
+    'data/amex-default-prediction/train_data.csv', nrows=10)
+FEATURE_VARIABLES = []
+for s in train_data_head.columns:
+    if s in DATE_VARIABLES or s in [*ID_VARIABLES, TARGET_VARIABLE, PREDICTION_VARIABLE]:
+        continue
+    elif s in CATEGORICAL_VARIABLES:
         pass
     elif s.startswith('D_'):
         # D_* = Delinquency variables
@@ -37,7 +37,23 @@ def get_casted_variable(s: str):
         pass
     else:
         raise ValueError(f'Unexpected column: {s}')
-    return F.col(s).cast('float').alias(s)
+    FEATURE_VARIABLES.append(s)
+
+
+def get_casted_variable(s: str):
+    if s in CATEGORICAL_VARIABLES or s in ID_VARIABLES:
+        return F.col(s).cast('string').alias(s)
+    elif s in DATE_VARIABLES:
+        return F.to_date(s, format=DATE_VARIABLES[s]).alias(s)
+    else:
+        # everything else we cast to float
+        if s in [TARGET_VARIABLE, PREDICTION_VARIABLE]:
+            pass
+        elif s in FEATURE_VARIABLES:
+            pass
+        else:
+            raise ValueError(f'Unexpected column: {s}')
+        return F.col(s).cast('float').alias(s)
 
 
 if __name__ == '__main__':
