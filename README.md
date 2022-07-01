@@ -61,7 +61,15 @@ Similar trends can be observed from the feature importance in [1e0a4409d0f64b01a
 where the last observed versions of the same variables dominate, with a few exceptions.
 
 
-# Data
+# Setup
+
+## Spark
+```
+sudo apt install --no-install-recommends -y openjdk-11-jdk-headless
+export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+```
+
+## Data
 To download and unzip all files to `data`:
 ```
 kaggle competitions download -c amex-default-prediction -p data
