@@ -98,10 +98,12 @@ def find_best_run(
         1. if higher_is_better else 1.
     )
     mlflow.set_tag("best_run", best_run.info.run_id)
-    mlflow.log_param(f'best_lgb_params_json',
+
+    # collapse some params into parent (assumed to be arg: run)
+    mlflow.log_param(f'lgb_params_json',
                      best_run.data.params['lgb_params_json'])
-    mlflow.log_metric(f'best_{metric_name}',
-                      best_run.data.metrics[metric_name])
+    mlflow.log_metric(metric_name, best_run.data.metrics[metric_name])
+
     print(
         f'best run id: {best_run.info.run_id} over {len(nested_runs)} runs '
         f'achieved best {metric_name} of {best_run.data.metrics[metric_name]}\n'
