@@ -3,6 +3,7 @@ from typing import List
 
 import pyspark.sql.functions as F
 from pyspark.sql import DataFrame
+from pyspark import StorageLevel
 
 __BATCH_INDEX_COLUMN__ = '__BATCH_INDEX_COLUMN__'
 RANDOM_SEED = 20220801
@@ -27,7 +28,8 @@ class Batched:
                 .filter(F.col(__BATCH_INDEX_COLUMN__) == i)
                 .drop(__BATCH_INDEX_COLUMN__)
                 # need to persist for consistent behaviour with rand
-                .persist()
+                # persist to disk only because we're trying to avoid OOM error with batching
+                .persist(storageLevel=StorageLevel.DISK_ONLY)
             )
             for i in range(self.num_batches)
         ]
