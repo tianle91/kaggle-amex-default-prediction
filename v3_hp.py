@@ -99,3 +99,5 @@ with mlflow.start_run(nested=False) as run:
         f'run_id: {run.info.run_id} '
         f'experiment_id: {run.info.experiment_id} '
     )
+
+spark.stop()
