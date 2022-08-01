@@ -37,23 +37,30 @@ non_feature_columns = [
     *DATE_VARIABLES.keys(),
 ]
 feature_columns = [
-    c for c in train_pdf.columns if c not in non_feature_columns]
-print(
-    f'len(feature_columns): {len(feature_columns)}\n',
-    ', '.join(feature_columns)
-)
+    c for c in train_pdf.columns
+    if c not in non_feature_columns
+]
+print(f'Feature columns ({len(feature_columns)}):\n' +
+      ', '.join(feature_columns))
 
 
 X_fit = train_pdf[feature_columns].reset_index(drop=True)
 X_test = test_pdf[feature_columns].reset_index(drop=True)
-print(X_fit.shape, X_test.shape)
-
 y_fit = np.array(train_pdf[TARGET_VARIABLE])
-print(np.unique(y_fit, return_counts=True))
-
+print(
+    f'X_fit.shape: {X_fit.shape} '
+    f'X_test.shape: {X_test.shape} '
+    f'y_fit.shape: {y_fit.shape} '
+    f'y_fit uniques: {np.unique(y_fit, return_counts=True)} '
+)
 
 X_train, X_test, y_train, y_test = train_test_split(X_fit, y_fit)
-print(X_train.shape, X_test.shape, y_train.shape, y_test.shape)
+print(
+    f'X_train.shape: {X_train.shape} '
+    f'X_test.shape: {X_test.shape} '
+    f'y_train.shape: {y_train.shape} '
+    f'y_test.shape: {y_test.shape} '
+)
 
 
 MAX_EVALS = 5
@@ -71,10 +78,6 @@ space = {
 
 
 with mlflow.start_run(nested=False) as run:
-    print(
-        f'run_id: {run.info.run_id} '
-        f'experiment_id: {run.info.experiment_id} '
-    )
     train_objective = build_train_objective(
         X_train=X_train,
         y_train=y_train,
@@ -90,3 +93,7 @@ with mlflow.start_run(nested=False) as run:
         trials=Trials()
     )
     find_best_run(run)
+    print(
+        f'run_id: {run.info.run_id} '
+        f'experiment_id: {run.info.experiment_id} '
+    )
