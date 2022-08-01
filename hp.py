@@ -1,5 +1,4 @@
 import json
-from pprint import pformat
 from typing import List
 
 import hyperopt
@@ -26,14 +25,6 @@ def get_cv_hp_metrics(
         # auto logging converts everything to strings, we want something deserializable
         mlflow.log_param('lgb_params_json', json.dumps(lgb_params))
 
-        # y_train_pred = model_selection.cross_val_predict(
-        #     estimator=LGBMClassifier(**lgb_params),
-        #     X=X_train,
-        #     y=y_train,
-        #     fit_params={'categorical_feature': categorical_feature},
-        #     method='predict_proba'
-        # )[:, 1]
-
         mlflow.lightgbm.autolog()
         model = LGBMClassifier(**lgb_params)
         model.fit(
@@ -45,9 +36,6 @@ def get_cv_hp_metrics(
 
         metrics = {
             # returns (metric_name, metric_value, higher_is_better)
-            # 'train_feval_amex': feval_amex(y_true=y_train, y_pred=y_train_pred)[1],
-            # 'train_feval_amex_gini': feval_amex_gini(y_true=y_train, y_pred=y_train_pred)[1],
-            # 'train_feval_amex_top4': feval_amex_top4(y_true=y_train, y_pred=y_train_pred)[1],
             'test_feval_amex': feval_amex(y_true=y_test, y_pred=y_test_pred)[1],
             'test_feval_amex_gini': feval_amex_gini(y_true=y_test, y_pred=y_test_pred)[1],
             'test_feval_amex_top4': feval_amex_top4(y_true=y_test, y_pred=y_test_pred)[1],
