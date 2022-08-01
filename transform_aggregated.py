@@ -1,7 +1,7 @@
+import pandas as pd
 import pyspark.sql.functions as F
 from pyspark.sql import DataFrame
 from pyspark.sql.window import Window
-import pandas as pd
 
 from format_data import CATEGORICAL_VARIABLES, FEATURE_VARIABLES
 from spark_utils import get_spark_session
