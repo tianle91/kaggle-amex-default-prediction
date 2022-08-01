@@ -128,12 +128,13 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# data
-data/
-data_transformed/
-
 # os
 .DS_Store
 
-# expriments
+# data
+data/
+data_transformed/
+submission.csv
+
+# mlflow
 mlruns/
