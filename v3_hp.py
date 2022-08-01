@@ -1,16 +1,18 @@
-from hp import build_train_objective, find_best_run
-import mlflow
 import hyperopt
+import mlflow
+import numpy as np
+from hyperopt import Trials
 from hyperopt.pyll.base import scope
 from sklearn.model_selection import train_test_split
-import numpy as np
-from format_data import TARGET_VARIABLE, DATE_VARIABLES, ID_VARIABLES
+
 from encoder import CategoricalToIntegerEncoders
-from format_data import CATEGORICAL_VARIABLES
+from format_data import (CATEGORICAL_VARIABLES, DATE_VARIABLES, ID_VARIABLES,
+                         TARGET_VARIABLE)
+from hp import build_train_objective, find_best_run
 from spark_utils import get_spark_session
-from hyperopt import Trials
 
 spark = get_spark_session()
+
 # run transform_latest.py if this don't exist
 test_data = spark.read.parquet(
     'data_transformed/amex-default-prediction/test_data_latest')
