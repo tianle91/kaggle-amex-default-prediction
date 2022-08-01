@@ -1,12 +1,14 @@
+import json
+from pprint import pformat
+from typing import List
+
 import hyperopt
-from evaluation import feval_amex, feval_amex_gini, feval_amex_top4
-from sklearn import model_selection
+import mlflow
+import numpy as np
 import pandas as pd
 from lightgbm import LGBMClassifier
-import numpy as np
-import mlflow
-from typing import List
-from pprint import pformat
+
+from evaluation import feval_amex, feval_amex_gini, feval_amex_top4
 
 RANDOM_STATE = 20220731
 
@@ -21,14 +23,16 @@ def get_cv_hp_metrics(
 ) -> dict:
     with mlflow.start_run(nested=True) as run:
         mlflow.log_params(params=lgb_params)
-        model = LGBMClassifier(**lgb_params)
-        y_train_pred = model_selection.cross_val_predict(
-            estimator=model,
-            X=X_train,
-            y=y_train,
-            fit_params={'categorical_feature': categorical_feature},
-            method='predict_proba'
-        )[:, 1]
+        # auto logging converts everything to strings, we want something deserializable
+        mlflow.log_param('lgb_params_json', json.dumps(lgb_params))
+
+        # y_train_pred = model_selection.cross_val_predict(
+        #     estimator=LGBMClassifier(**lgb_params),
+        #     X=X_train,
+        #     y=y_train,
+        #     fit_params={'categorical_feature': categorical_feature},
+        #     method='predict_proba'
+        # )[:, 1]
 
         mlflow.lightgbm.autolog()
         model = LGBMClassifier(**lgb_params)
@@ -41,9 +45,9 @@ def get_cv_hp_metrics(
 
         metrics = {
             # returns (metric_name, metric_value, higher_is_better)
-            'train_feval_amex': feval_amex(y_true=y_train, y_pred=y_train_pred)[1],
-            'train_feval_amex_gini': feval_amex_gini(y_true=y_train, y_pred=y_train_pred)[1],
-            'train_feval_amex_top4': feval_amex_top4(y_true=y_train, y_pred=y_train_pred)[1],
+            # 'train_feval_amex': feval_amex(y_true=y_train, y_pred=y_train_pred)[1],
+            # 'train_feval_amex_gini': feval_amex_gini(y_true=y_train, y_pred=y_train_pred)[1],
+            # 'train_feval_amex_top4': feval_amex_top4(y_true=y_train, y_pred=y_train_pred)[1],
             'test_feval_amex': feval_amex(y_true=y_test, y_pred=y_test_pred)[1],
             'test_feval_amex_gini': feval_amex_gini(y_true=y_test, y_pred=y_test_pred)[1],
             'test_feval_amex_top4': feval_amex_top4(y_true=y_test, y_pred=y_test_pred)[1],
@@ -94,12 +98,14 @@ def find_best_run(
         1. if higher_is_better else 1.
     )
     mlflow.set_tag("best_run", best_run.info.run_id)
-    mlflow.log_metric(f"best_{metric_name}",
+    mlflow.log_param(f'best_lgb_params_json',
+                     best_run.data.params['lgb_params_json'])
+    mlflow.log_metric(f'best_{metric_name}',
                       best_run.data.metrics[metric_name])
     print(
         f'best run id: {best_run.info.run_id} over {len(nested_runs)} runs '
         f'achieved best {metric_name} of {best_run.data.metrics[metric_name]}\n'
-        f'params:\n{pformat(best_run.data.params)}\n'
-        f'metrics:\n{pformat(best_run.data.metrics)} '
+        # f'params:\n{pformat(best_run.data.params)}\n'
+        # f'metrics:\n{pformat(best_run.data.metrics)} '
     )
     return best_run
