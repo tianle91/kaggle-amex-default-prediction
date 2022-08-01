@@ -4,9 +4,8 @@ from pyspark.sql.types import FloatType, StringType
 from pyspark.sql.window import Window
 from scipy import stats
 
+from format_data import CATEGORICAL_VARIABLES, FEATURE_VARIABLES
 from spark_utils import get_spark_session
-from format_data import FEATURE_VARIABLES, CATEGORICAL_VARIABLES
-
 
 WINDOW_FEATURE_PREVIOUS_VARIABLES = [
     f'{c}_previous'
