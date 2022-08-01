@@ -1,8 +1,7 @@
 import pyspark.sql.functions as F
 from pyspark.sql import DataFrame
-from pyspark.sql.types import FloatType, StringType
 from pyspark.sql.window import Window
-from scipy import stats
+import pandas as pd
 
 from format_data import CATEGORICAL_VARIABLES, FEATURE_VARIABLES
 from spark_utils import get_spark_session
@@ -36,8 +35,9 @@ def get_window_features(df: DataFrame) -> DataFrame:
         ).alias('S_2_days_since_previous'),
         *FEATURE_VARIABLES,
         *[
-            F.lag(c, offset=-1,
-                  default=None).over(window).alias(f'{c}_previous')
+            F.lag(
+                c, offset=-1, default=None
+            ).over(window).alias(f'{c}_previous')
             for c in FEATURE_VARIABLES
         ]
     ]
@@ -65,11 +65,6 @@ def get_window_features(df: DataFrame) -> DataFrame:
         ],
     )
     return out
-
-
-def get_mode(list_of_values) -> str:
-    if len(list_of_values) > 0:
-        return str(stats.mode(list_of_values)[0][0])
 
 
 SUMMARY_FEATURE_NUM_UNIQUE_VARIABLES = [
@@ -102,13 +97,23 @@ SUMMARY_FEATURE_VARIABLES = [
 ]
 
 
+def get_mode(list_of_things):
+    if len(list_of_things) == 0:
+        return None
+    mode_values = pd.Series(list_of_things).mode()
+    if len(mode_values) == 0:
+        return None
+    else:
+        return mode_values.iloc[0]
+
+
 def get_summary_features(df: DataFrame) -> DataFrame:
     agg_cols = [F.count('*').alias('num_statements')]
+    mode_udf = F.udf(get_mode, 'string')
     for c in FEATURE_VARIABLES:
         agg_cols.append(F.size(F.collect_set(c)).alias(f'{c}_num_unique'))
         if c in CATEGORICAL_VARIABLES:
-            agg_cols.append(F.udf(get_mode, 'string')(
-                F.collect_list(c)).alias(f'{c}_mode'))
+            agg_cols.append(mode_udf(F.collect_list(c)).alias(f'{c}_mode'))
         else:
             agg_cols += [
                 F.min(c).alias(f'{c}_min'),
