@@ -64,7 +64,7 @@ class BatchedLGBMClassifier:
         pred_outputs = []
         for i, df in enumerate(dfs):
             print(f'Predicting {i}/{len(dfs)} with {df.count()} rows')
-            X, y = getxy.transform(df=df)
+            X, y = self.getxy.transform(df=df)
             pred_outputs.append((
                 df.select(id_variables).toPandas(),
                 self.model.predict_proba(X=X)
