@@ -6,6 +6,7 @@ from lightgbm import LGBMClassifier
 import numpy as np
 import mlflow
 from typing import List
+from pprint import pformat
 
 RANDOM_STATE = 20220731
 
@@ -97,6 +98,8 @@ def find_best_run(
                       best_run.data.metrics[metric_name])
     print(
         f'best run id: {best_run.info.run_id} over {len(nested_runs)} runs '
-        f'achieved best {metric_name} of {best_run.data.metrics[metric_name]} '
+        f'achieved best {metric_name} of {best_run.data.metrics[metric_name]}\n'
+        f'params:\n{pformat(best_run.data.params)}\n'
+        f'metrics:\n{pformat(best_run.data.metrics)} '
     )
     return best_run
