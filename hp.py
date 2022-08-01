@@ -33,8 +33,8 @@ def get_cv_hp_metrics(
         mlflow.lightgbm.autolog()
         model = LGBMClassifier(**lgb_params)
         model.fit(
-            X=X_test,
-            y=y_test,
+            X=X_train,
+            y=y_train,
             categorical_feature=categorical_feature
         )
         y_test_pred = model.predict_proba(X=X_test)[:, 1]
