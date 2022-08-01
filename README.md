@@ -5,23 +5,24 @@ https://www.kaggle.com/competitions/amex-default-prediction/
 # Useful
 `mlflow ui` runs the mlflow ui at [127.0.0.1:5000](http://127.0.0.1:5000)
 
-`kaggle competitions submit -c amex-default-prediction -f ./mlruns/3/afcfa017b3ce4b349e159577f712357c/artifacts/submission.csv -m "afcfa017b3ce4b349e159577f712357c"`
+`kaggle competitions submit -c amex-default-prediction -f submission.csv -m "v3_hp"`
 
 
 # Submissions
 These are taken from [kaggle submissions](https://www.kaggle.com/competitions/amex-default-prediction/submissions).
-| index | notebook                     | score | train score | valid score | mlflow run | comments |
-| ----- | ---------------------------- | ----- | ----------- | ----------- | ---------- | -------- |
-| 9b    | v2_aggregated                | 0.786 | 0.825       | 0.786       | [link](http://127.0.0.1:5000/#/experiments/7/runs/a4afb732fa744b81b8e3163f9af307b0) | same as below, except with raw score |
-| 9*    | v2_aggregated                | 0.578 | 0.825       | 0.786       | [link](http://127.0.0.1:5000/#/experiments/7/runs/a4afb732fa744b81b8e3163f9af307b0) | new aggregated features, new batched prediction method |
-| 8*    | v2_aggregated                | 0.783 | -           | 0.782       | [link](http://127.0.0.1:5000/#/experiments/7/runs/0261ff0b99024adc88cd4b8566e2a4d1) | - |
-| 7*    | use_latest_tune_label_weight | 0.780 | 0.8         | 0.783       | [link](http://127.0.0.1:5000/#/experiments/5/runs/aa3e8418ec5140da995a36e4830290c5) | `negative_label_weight=2.009`achieved best valid score |
-| 6*    | use_latest+holiday           | 0.781 | 0.798       | 0.78        | [link](http://127.0.0.1:5000/#/experiments/4/runs/8cc58c1faa8a41ed8ec683f1a0fda6c9) | `postive_label_multiplicative_factor = 0.05` |
-| 5     | use_latest+fourier           | 0.776 | 0.794       | 0.775       | [link](http://127.0.0.1:5000/#/experiments/3/runs/afcfa017b3ce4b349e159577f712357c) | `num_boost_round=200` |
-| 4     | use_latest                   | 0.773 | 0.779       | 0.777       | [link](http://127.0.0.1:5000/#/experiments/1/runs/74f0f2084c1243788e52c3655f141a35) | `is_unbalance=True` |
-| 3*    | use_aggregated               | 0.778 | 0.79        | 0.775       | [link](http://127.0.0.1:5000/#/experiments/2/runs/1e0a4409d0f64b01a242d38c75df61cd) | - |
-| 2     | use_latest                   | 0.776 | 0.786       | 0.774       | [link](http://127.0.0.1:5000/#/experiments/1/runs/65418e5e512a433fa7e669bbbeb18880) | - |
-| 1     | sample_submission.csv        | 0.019 | -           | -           | - | default prediction is all 0 |
+| index | source                       | score | train score | valid score | comments |
+| ----- | ---------------------------- | ----- | ----------- | ----------- | -------- |
+| 4b    | v3_hp                        | 0.780 | 0.778       |             | tune class weights using latest features (not aggregated) |
+| 9b    | v2_aggregated                | 0.786 | 0.825       | 0.786       | same as below, except with raw score |
+| 9*    | v2_aggregated                | 0.578 | 0.825       | 0.786       | new aggregated features, new batched prediction method |
+| 8*    | v2_aggregated                | 0.783 | -           | 0.782       |          |
+| 7*    | use_latest_tune_label_weight | 0.780 | 0.8         | 0.783       | `negative_label_weight=2.009`achieved best valid score |
+| 6*    | use_latest+holiday           | 0.781 | 0.798       | 0.78        | `postive_label_multiplicative_factor = 0.05` |
+| 5     | use_latest+fourier           | 0.776 | 0.794       | 0.775       | `num_boost_round=200` |
+| 4     | use_latest                   | 0.773 | 0.779       | 0.777       | `is_unbalance=True` |
+| 3*    | use_aggregated               | 0.778 | 0.79        | 0.775       |          |
+| 2     | use_latest                   | 0.776 | 0.786       | 0.774       |          |
+| 1     | sample_submission.csv        | 0.019 | -           | -           | default prediction is all 0 |
 
 \* Indicates that there is attached commentary.
 
