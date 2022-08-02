@@ -65,17 +65,17 @@ print(
 )
 
 
-MAX_EVALS = 5
+MAX_EVALS = 1000
 
 space = {
     'class_weight': {
         0.: 1.,
         1.: hyperopt.hp.uniform('class_weight', 0., 10.)
     },
-    # 'subsample': hyperopt.hp.uniform('subsample', 0.05, 1.0),
+    'subsample': hyperopt.hp.uniform('subsample', 0.05, 1.0),
     # The parameters below are cast to int using the scope.int() wrapper
-    # 'num_iterations': scope.int(hyperopt.hp.quniform('num_iterations', 10, 200, 1)),
-    # 'num_leaves': scope.int(hyperopt.hp.quniform('num_leaves', 20, 50, 1))
+    'num_iterations': scope.int(hyperopt.hp.quniform('num_iterations', 10, 10000, 1)),
+    'num_leaves': scope.int(hyperopt.hp.quniform('num_leaves', 20, 100, 1))
 }
 
 
