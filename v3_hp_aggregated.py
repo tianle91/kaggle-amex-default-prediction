@@ -2,7 +2,7 @@ import hyperopt
 import mlflow
 from hyperopt import Trials
 
-from batched import Batched, train_test_split
+from batched import Batched, train_test_split_df
 from format_data import (CATEGORICAL_VARIABLES, DATE_VARIABLES, ID_VARIABLES,
                          PREDICTION_VARIABLE, TARGET_VARIABLE)
 from getxy import GetXY
@@ -62,7 +62,7 @@ batch_size = known_good_df.count() * (len(known_good_df.columns) /
 print(f'batch_size: {batch_size}')
 
 
-fit_data_labelled, test_data_labelled = train_test_split(train_data_labelled)
+fit_data_labelled, test_data_labelled = train_test_split_df(train_data_labelled)
 assert fit_data_labelled.count(
 ) + test_data_labelled.count() == train_data_labelled.count()
 

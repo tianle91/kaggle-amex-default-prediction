@@ -4,9 +4,10 @@ from typing import List
 import numpy as np
 import pandas as pd
 import pyspark.sql.functions as F
-from lightgbm import LGBMClassifier
+from lightgbm import LGBMClassifier, early_stopping
 from pyspark import StorageLevel
 from pyspark.sql import DataFrame
+from sklearn.model_selection import train_test_split
 
 from getxy import GetXY
 
@@ -53,11 +54,18 @@ class BatchedLGBMClassifier:
         for i, df in enumerate(dfs):
             print(f'Fitting {i}/{len(dfs)} with {df.count()} rows')
             X, y = self.getxy.transform(df=df)
-            fit_params = {}
+            X_fit, X_valid, y_fit, y_valid = train_test_split(X, y, test_size=.1)
+            fit_params = {
+                'X': X_fit,
+                'y': y_fit,
+                'eval_set': [(X_valid, y_valid)],
+                'eval_names': ['valid10pct'],
+                'categorical_feature': self.getxy.columns_encoded,
+                'callbacks': [early_stopping(stopping_rounds=10, first_metric_only=False)]
+            }
             if self.model is not None:
                 fit_params.update({'init_model': self.model})
-            self.model = LGBMClassifier(
-                **self.lgb_params).fit(X=X, y=y, **fit_params)
+            self.model = LGBMClassifier(**self.lgb_params).fit(**fit_params)
         return self
 
     def predict(self, dfs: List[DataFrame], id_variables: List[str], prediction_variable: str):
@@ -79,7 +87,7 @@ class BatchedLGBMClassifier:
 __IS_TEST_COLUMN__ = '__IS_TEST_COLUMN__'
 
 
-def train_test_split(df, test_size: float = .25, seed=RANDOM_SEED):
+def train_test_split_df(df, test_size: float = .25, seed=RANDOM_SEED):
     df = df.withColumn(
         __IS_TEST_COLUMN__,
         F.rand(seed=seed) < F.lit(test_size)
