@@ -8,7 +8,6 @@ from lightgbm import LGBMClassifier
 from pyspark import StorageLevel
 from pyspark.sql import DataFrame
 
-from format_data import PREDICTION_VARIABLE
 from getxy import GetXY
 
 __BATCH_INDEX_COLUMN__ = '__BATCH_INDEX_COLUMN__'
@@ -61,7 +60,7 @@ class BatchedLGBMClassifier:
                 **self.lgb_params).fit(X=X, y=y, **fit_params)
         return self
 
-    def predict(self, dfs: List[DataFrame], id_variables: List[str]):
+    def predict(self, dfs: List[DataFrame], id_variables: List[str], prediction_variable: str):
         pred_outputs = []
         for i, df in enumerate(dfs):
             print(f'Predicting {i}/{len(dfs)} with {df.count()} rows')
@@ -72,5 +71,5 @@ class BatchedLGBMClassifier:
             ))
         ids, preds = zip(*pred_outputs)
         pred_df = pd.concat(ids, axis=0)
-        pred_df[PREDICTION_VARIABLE] = np.concatenate(preds, axis=0)[:, 1]
+        pred_df[prediction_variable] = np.concatenate(preds, axis=0)[:, 1]
         return pred_df
