@@ -20,8 +20,9 @@ def get_cv_hp_metrics(
     y_test: np.array,
     categorical_feature: List[str],
     lgb_params: dict,
+    nested: bool = True,
 ) -> dict:
-    with mlflow.start_run(nested=True) as run:
+    with mlflow.start_run(nested=nested) as run:
         mlflow.log_params(params=lgb_params)
         # auto logging converts everything to strings, we want something deserializable
         mlflow.log_param('lgb_params_json', json.dumps(lgb_params))
@@ -50,7 +51,7 @@ def get_cv_hp_metrics(
         }
         mlflow.log_metrics(metrics=metrics)
 
-    return metrics
+    return model, metrics
 
 
 def build_train_objective(
@@ -63,13 +64,14 @@ def build_train_objective(
     higher_is_better: bool = True,
 ):
     def obj_fn(lgb_params):
-        metrics = get_cv_hp_metrics(
+        _, metrics = get_cv_hp_metrics(
             X_train=X_train,
             y_train=y_train,
             X_test=X_test,
             y_test=y_test,
             categorical_feature=categorical_feature,
             lgb_params=lgb_params,
+            nested=True,
         )
         return {
             'status': hyperopt.STATUS_OK,
