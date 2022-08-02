@@ -73,3 +73,21 @@ class BatchedLGBMClassifier:
         pred_df = pd.concat(ids, axis=0)
         pred_df[prediction_variable] = np.concatenate(preds, axis=0)[:, 1]
         return pred_df
+
+
+
+__IS_TEST_COLUMN__ = '__IS_TEST_COLUMN__'
+
+
+def train_test_split(df, test_size: float = .25, seed=RANDOM_SEED):
+    df = df.withColumn(
+        __IS_TEST_COLUMN__,
+        F.rand(seed=seed) < F.lit(test_size)
+    )
+    df_train = df.filter(~F.col(__IS_TEST_COLUMN__)).drop(__IS_TEST_COLUMN__)
+    df_test = df.filter(F.col(__IS_TEST_COLUMN__)).drop(__IS_TEST_COLUMN__)
+    # need to persist for consistent behaviour with rand
+    # persist to disk only because we're trying to avoid OOM error with batching
+    df_train = df_train.persist(storageLevel=StorageLevel.DISK_ONLY)
+    df_test = df_test.persist(storageLevel=StorageLevel.DISK_ONLY)
+    return df_train, df_test
