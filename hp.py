@@ -5,7 +5,8 @@ import hyperopt
 import mlflow
 import numpy as np
 import pandas as pd
-from lightgbm import LGBMClassifier
+from lightgbm import LGBMClassifier, early_stopping
+from sklearn.model_selection import train_test_split
 
 from evaluation import feval_amex, feval_amex_gini, feval_amex_top4
 
@@ -25,12 +26,19 @@ def get_cv_hp_metrics(
         # auto logging converts everything to strings, we want something deserializable
         mlflow.log_param('lgb_params_json', json.dumps(lgb_params))
 
+        X_fit, X_valid, y_fit, y_valid = train_test_split(
+            X_train, y_train, test_size=.1)
+
         mlflow.lightgbm.autolog()
         model = LGBMClassifier(**lgb_params)
         model.fit(
-            X=X_train,
-            y=y_train,
-            categorical_feature=categorical_feature
+            X=X_fit,
+            y=y_fit,
+            eval_set=[(X_valid, y_valid)],
+            eval_names=['valid10pct'],
+            categorical_feature=categorical_feature,
+            callbacks=[early_stopping(
+                stopping_rounds=10, first_metric_only=False)]
         )
         y_test_pred = model.predict_proba(X=X_test)[:, 1]
 
