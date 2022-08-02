@@ -1,6 +1,7 @@
 import hyperopt
 import mlflow
 from hyperopt import Trials
+from hyperopt.pyll.base import scope
 
 from batched import Batched, train_test_split_df
 from format_data import (CATEGORICAL_VARIABLES, DATE_VARIABLES, ID_VARIABLES,
@@ -62,7 +63,8 @@ batch_size = known_good_df.count() * (len(known_good_df.columns) /
 print(f'batch_size: {batch_size}')
 
 
-fit_data_labelled, test_data_labelled = train_test_split_df(train_data_labelled)
+fit_data_labelled, test_data_labelled = train_test_split_df(
+    train_data_labelled)
 assert fit_data_labelled.count(
 ) + test_data_labelled.count() == train_data_labelled.count()
 
@@ -73,17 +75,17 @@ test_data_labelled_batches = Batched(
     batch_size=batch_size).fit_transform(test_data_labelled)
 
 
-MAX_EVALS = 5
+MAX_EVALS = 1000
 
 space = {
     'class_weight': {
         0.: 1.,
         1.: hyperopt.hp.uniform('class_weight', 0., 10.)
     },
-    # 'subsample': hyperopt.hp.uniform('subsample', 0.05, 1.0),
+    'subsample': hyperopt.hp.uniform('subsample', 0.05, 1.0),
     # The parameters below are cast to int using the scope.int() wrapper
-    # 'num_iterations': scope.int(hyperopt.hp.quniform('num_iterations', 10, 200, 1)),
-    # 'num_leaves': scope.int(hyperopt.hp.quniform('num_leaves', 20, 50, 1))
+    'num_iterations': scope.int(hyperopt.hp.quniform('num_iterations', 10, 10000, 1)),
+    'num_leaves': scope.int(hyperopt.hp.quniform('num_leaves', 20, 100, 1))
 }
 
 
