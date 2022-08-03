@@ -13,15 +13,9 @@ from spark_utils import get_spark_session
 
 spark = get_spark_session()
 
-# run transform_latest.py if this don't exist
-test_data = spark.read.parquet(
-    'data_transformed/amex-default-prediction/test_data_latest')
 train_data = spark.read.parquet(
     'data_transformed/amex-default-prediction/train_data_latest')
-# run format_data.py if these don't exist
 train_labels = spark.read.parquet('data/amex-default-prediction/train_labels')
-sample_submission = spark.read.parquet(
-    'data/amex-default-prediction/sample_submission')
 
 
 encs = CategoricalToIntegerEncoders(
@@ -29,8 +23,6 @@ encs = CategoricalToIntegerEncoders(
 
 train_pdf = train_data.join(train_labels, on='customer_ID', how='inner')
 train_pdf = encs.transform(spark=spark, df=train_pdf).toPandas()
-
-test_pdf = encs.transform(spark=spark, df=test_data).toPandas()
 
 
 non_feature_columns = [
@@ -47,11 +39,9 @@ print(f'Feature columns ({len(feature_columns)}):\n' +
 
 
 X_fit = train_pdf[feature_columns].reset_index(drop=True)
-X_test = test_pdf[feature_columns].reset_index(drop=True)
 y_fit = np.array(train_pdf[TARGET_VARIABLE])
 print(
     f'X_fit.shape: {X_fit.shape} '
-    f'X_test.shape: {X_test.shape} '
     f'y_fit.shape: {y_fit.shape} '
     f'y_fit uniques: {np.unique(y_fit, return_counts=True)} '
 )
@@ -72,12 +62,9 @@ space = {
         0.: 1.,
         1.: hyperopt.hp.uniform('class_weight', 0., 10.)
     },
-    'subsample': hyperopt.hp.uniform('subsample', 0.05, 1.),
-    'feature_fraction': hyperopt.hp.uniform('feature_fraction', 0., 1.),
-    'learning_rate': hyperopt.hp.uniform('learning_rate', 0., 1.),
-    # The parameters below are cast to int using the scope.int() wrapper
-    'num_iterations': scope.int(hyperopt.hp.quniform('num_iterations', 10, 10000, 1)),
-    'num_leaves': scope.int(hyperopt.hp.quniform('num_leaves', 20, 100, 1))
+    'learning_rate': hyperopt.hp.uniform('learning_rate', 0., .1),
+    'num_iterations': scope.int(hyperopt.hp.quniform('num_iterations', 100, 10000, 1)),
+    'num_leaves': scope.int(hyperopt.hp.quniform('num_leaves', 31, 1000, 1))
 }
 
 
