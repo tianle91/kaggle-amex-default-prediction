@@ -75,8 +75,8 @@ space = {
         1.: hyperopt.hp.uniform('class_weight', 0., 10.)
     },
     'learning_rate': hyperopt.hp.uniform('learning_rate', 0., .1),
-    'num_iterations': scope.int(hyperopt.hp.quniform('num_iterations', 100, 10000, 1)),
-    'num_leaves': scope.int(hyperopt.hp.quniform('num_leaves', 31, 1000, 1))
+    'num_iterations': scope.int(hyperopt.hp.quniform('num_iterations', 100, 5000, 1)),
+    'num_leaves': scope.int(hyperopt.hp.quniform('num_leaves', 31, 100, 1))
 }
 
 
