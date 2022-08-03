@@ -16,6 +16,11 @@ with SparkSessionContext() as spark:
         'data_transformed/amex-default-prediction/train_data_latest')
     train_labels = spark.read.parquet(
         'data/amex-default-prediction/train_labels')
+    train_data_labelled = train_data.join(
+        train_labels, on='customer_ID', how='inner')
+    assert train_data_labelled.count() == train_data.count()
+    assert train_data_labelled.select(ID_VARIABLES).distinct(
+    ).count() == train_data.select(ID_VARIABLES).distinct().count()
 
     non_feature_columns = [
         TARGET_VARIABLE,
@@ -29,23 +34,17 @@ with SparkSessionContext() as spark:
     categorical_feature_columns = CATEGORICAL_VARIABLES
     numerical_feature_columns = [
         c for c in feature_columns if c not in categorical_feature_columns]
-    print(f'''
-    Feature columns ({len(feature_columns)}):
-    {', '.join(sorted(feature_columns))}
-
-    Categorical feature columns ({len(categorical_feature_columns)}):
-    {', '.join(sorted(categorical_feature_columns))}
-
-    Numerical feature columns ({len(numerical_feature_columns)}):
-    {', '.join(sorted(numerical_feature_columns))}
-    ''')
+    print(
+        f'Feature columns {len(feature_columns)} '
+        f'Categorical feature columns {len(categorical_feature_columns)} '
+        f'Numerical feature columns {len(numerical_feature_columns)} '
+    )
 
     encs = CategoricalToIntegerEncoders(
         columns=categorical_feature_columns).fit(train_data)
     transformed_feature_columns = numerical_feature_columns + encs.columns_encoded
 
-    train_pdf = train_data.join(train_labels, on='customer_ID', how='inner')
-    train_pdf = encs.transform(spark=spark, df=train_pdf).toPandas()
+    train_pdf = encs.transform(spark=spark, df=train_data_labelled).toPandas()
     train_pdf_bytes = train_pdf.memory_usage(deep=True).sum()
     print(
         f'train_pdf.memory_usage in megabytes: {train_pdf_bytes / 1048576: .2f}')
