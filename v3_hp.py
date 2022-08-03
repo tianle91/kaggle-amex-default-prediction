@@ -67,7 +67,7 @@ print(
 )
 
 
-MAX_EVALS = 1000
+MAX_EVALS = 100
 
 space = {
     'class_weight': {
