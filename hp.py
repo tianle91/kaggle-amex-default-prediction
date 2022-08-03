@@ -51,6 +51,9 @@ def get_cv_hp_metrics(
         }
         mlflow.log_metrics(metrics=metrics)
 
+        print(lgb_params)
+        print(metrics)
+
     return model, metrics
 
 

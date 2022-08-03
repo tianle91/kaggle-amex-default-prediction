@@ -20,3 +20,16 @@ def get_spark_session(num_cores: int = 8, gigs_ram: int = 16) -> SparkSession:
         .config('spark.rdd.compress', 'true')
         .getOrCreate()
     )
+
+
+class SparkSessionContext:
+    def __init__(self):
+        pass
+
+    def __enter__(self) -> SparkSession:
+        self.spark = get_spark_session()
+        return self.spark
+
+    def __exit__(self, ex_type, ex_value, ex_traceback):
+        self.spark.catalog.clearCache()
+        self.spark.stop()

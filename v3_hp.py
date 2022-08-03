@@ -9,48 +9,47 @@ from encoder import CategoricalToIntegerEncoders
 from format_data import (CATEGORICAL_VARIABLES, DATE_VARIABLES, ID_VARIABLES,
                          TARGET_VARIABLE)
 from hp import build_train_objective, find_best_run
-from spark_utils import get_spark_session
+from spark_utils import SparkSessionContext
 
-spark = get_spark_session()
+with SparkSessionContext() as spark:
+    train_data = spark.read.parquet(
+        'data_transformed/amex-default-prediction/train_data_latest')
+    train_labels = spark.read.parquet(
+        'data/amex-default-prediction/train_labels')
 
-train_data = spark.read.parquet(
-    'data_transformed/amex-default-prediction/train_data_latest')
-train_labels = spark.read.parquet('data/amex-default-prediction/train_labels')
+    non_feature_columns = [
+        TARGET_VARIABLE,
+        *ID_VARIABLES,
+        *DATE_VARIABLES.keys(),
+    ]
+    feature_columns = [
+        c for c in train_data.columns
+        if c not in non_feature_columns
+    ]
+    categorical_feature_columns = CATEGORICAL_VARIABLES
+    numerical_feature_columns = [
+        c for c in feature_columns if c not in categorical_feature_columns]
+    print(f'''
+    Feature columns ({len(feature_columns)}):
+    {', '.join(sorted(feature_columns))}
 
+    Categorical feature columns ({len(categorical_feature_columns)}):
+    {', '.join(sorted(categorical_feature_columns))}
 
-non_feature_columns = [
-    TARGET_VARIABLE,
-    *ID_VARIABLES,
-    *DATE_VARIABLES.keys(),
-]
-feature_columns = [
-    c for c in train_data.columns
-    if c not in non_feature_columns
-]
-categorical_feature_columns = CATEGORICAL_VARIABLES
-numerical_feature_columns = [
-    c for c in feature_columns if c not in categorical_feature_columns]
-print(f'''
-Feature columns ({len(feature_columns)}):
-{', '.join(sorted(feature_columns))}
+    Numerical feature columns ({len(numerical_feature_columns)}):
+    {', '.join(sorted(numerical_feature_columns))}
+    ''')
 
-Categorical feature columns ({len(categorical_feature_columns)}):
-{', '.join(sorted(categorical_feature_columns))}
+    encs = CategoricalToIntegerEncoders(
+        columns=categorical_feature_columns).fit(train_data)
+    transformed_feature_columns = numerical_feature_columns + encs.columns_encoded
 
-Numerical feature columns ({len(numerical_feature_columns)}):
-{', '.join(sorted(numerical_feature_columns))}
-''')
+    train_pdf = train_data.join(train_labels, on='customer_ID', how='inner')
+    train_pdf = encs.transform(spark=spark, df=train_pdf).toPandas()
+    train_pdf_bytes = train_pdf.memory_usage(deep=True).sum()
+    print(
+        f'train_pdf.memory_usage in megabytes: {train_pdf_bytes / 1048576: .2f}')
 
-
-encs = CategoricalToIntegerEncoders(
-    columns=categorical_feature_columns).fit(train_data)
-transformed_feature_columns = numerical_feature_columns + encs.columns_encoded
-
-
-train_pdf = train_data.join(train_labels, on='customer_ID', how='inner')
-train_pdf = encs.transform(spark=spark, df=train_pdf).toPandas()
-train_pdf_bytes = train_pdf.memory_usage(deep=True).sum()
-print(f'train_pdf.memory_usage in megabytes: {train_pdf_bytes / 1048576: .2f}')
 
 X_fit = train_pdf[transformed_feature_columns].reset_index(drop=True)
 y_fit = np.array(train_pdf[TARGET_VARIABLE])
@@ -101,5 +100,3 @@ with mlflow.start_run(nested=False) as run:
         f'run_id: {run.info.run_id} '
         f'experiment_id: {run.info.experiment_id} '
     )
-
-spark.stop()
