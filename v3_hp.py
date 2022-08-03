@@ -69,7 +69,7 @@ print(
 
 
 MAX_EVALS = 100
-
+trials = Trials()
 space = {
     'scale_pos_weight': hyperopt.hp.uniform('class_weight', 0., 10.),
     # lower learning rate, more iterations and more leaves
@@ -77,7 +77,6 @@ space = {
     'num_iterations': scope.int(hyperopt.hp.quniform('num_iterations', 100, 5000, 1)),
     'num_leaves': scope.int(hyperopt.hp.quniform('num_leaves', 31, 100, 1))
 }
-
 
 with mlflow.start_run(nested=False) as run:
     train_objective = build_train_objective(
@@ -87,13 +86,14 @@ with mlflow.start_run(nested=False) as run:
         y_test=y_test,
         categorical_feature=encs.columns_encoded,
     )
-    hyperopt.fmin(
+    best = hyperopt.fmin(
         fn=train_objective,
         space=space,
         algo=hyperopt.tpe.suggest,
         max_evals=MAX_EVALS,
-        trials=Trials()
+        trials=trials,
     )
+    print(f'best: {best}')
     find_best_run(run)
     print(
         'Main run info (no details here) '
