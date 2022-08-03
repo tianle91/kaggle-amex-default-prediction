@@ -18,27 +18,39 @@ train_data = spark.read.parquet(
 train_labels = spark.read.parquet('data/amex-default-prediction/train_labels')
 
 
-encs = CategoricalToIntegerEncoders(
-    columns=CATEGORICAL_VARIABLES).fit(train_data)
-
-train_pdf = train_data.join(train_labels, on='customer_ID', how='inner')
-train_pdf = encs.transform(spark=spark, df=train_pdf).toPandas()
-
-
 non_feature_columns = [
     TARGET_VARIABLE,
     *ID_VARIABLES,
     *DATE_VARIABLES.keys(),
 ]
 feature_columns = [
-    c for c in train_pdf.columns
+    c for c in train_data.columns
     if c not in non_feature_columns
 ]
-print(f'Feature columns ({len(feature_columns)}):\n' +
-      ', '.join(feature_columns))
+categorical_feature_columns = CATEGORICAL_VARIABLES
+numerical_feature_columns = [
+    c for c in feature_columns if c not in categorical_feature_columns]
+print(f'''
+Feature columns ({len(feature_columns)}):
+{', '.join(sorted(feature_columns))}
+
+Categorical feature columns ({len(categorical_feature_columns)}):
+{', '.join(sorted(categorical_feature_columns))}
+
+Numerical feature columns ({len(numerical_feature_columns)}):
+{', '.join(sorted(numerical_feature_columns))}
+''')
 
 
-X_fit = train_pdf[feature_columns].reset_index(drop=True)
+encs = CategoricalToIntegerEncoders(
+    columns=categorical_feature_columns).fit(train_data)
+transformed_feature_columns = numerical_feature_columns + encs.columns_encoded
+
+
+train_pdf = train_data.join(train_labels, on='customer_ID', how='inner')
+train_pdf = encs.transform(spark=spark, df=train_pdf).toPandas()
+
+X_fit = train_pdf[transformed_feature_columns].reset_index(drop=True)
 y_fit = np.array(train_pdf[TARGET_VARIABLE])
 print(
     f'X_fit.shape: {X_fit.shape} '
