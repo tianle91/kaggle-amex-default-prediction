@@ -49,6 +49,8 @@ transformed_feature_columns = numerical_feature_columns + encs.columns_encoded
 
 train_pdf = train_data.join(train_labels, on='customer_ID', how='inner')
 train_pdf = encs.transform(spark=spark, df=train_pdf).toPandas()
+train_pdf_bytes = train_pdf.memory_usage(deep=True).sum()
+print(f'train_pdf.memory_usage in megabytes: {train_pdf_bytes / 1048576: .2f}')
 
 X_fit = train_pdf[transformed_feature_columns].reset_index(drop=True)
 y_fit = np.array(train_pdf[TARGET_VARIABLE])
@@ -70,10 +72,8 @@ print(
 MAX_EVALS = 100
 
 space = {
-    'class_weight': {
-        0.: 1.,
-        1.: hyperopt.hp.uniform('class_weight', 0., 10.)
-    },
+    'scale_pos_weight': hyperopt.hp.uniform('class_weight', 0., 10.),
+    # lower learning rate, more iterations and more leaves
     'learning_rate': hyperopt.hp.uniform('learning_rate', 0., .1),
     'num_iterations': scope.int(hyperopt.hp.quniform('num_iterations', 100, 5000, 1)),
     'num_leaves': scope.int(hyperopt.hp.quniform('num_leaves', 31, 100, 1))
@@ -97,6 +97,7 @@ with mlflow.start_run(nested=False) as run:
     )
     find_best_run(run)
     print(
+        'Main run info (no details here) '
         f'run_id: {run.info.run_id} '
         f'experiment_id: {run.info.experiment_id} '
     )
