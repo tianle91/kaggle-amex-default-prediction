@@ -31,5 +31,4 @@ class SparkSessionContext:
         return self.spark
 
     def __exit__(self, ex_type, ex_value, ex_traceback):
-        self.spark.catalog.clearCache()
         self.spark.stop()
