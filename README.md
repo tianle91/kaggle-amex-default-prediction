@@ -12,6 +12,7 @@ https://www.kaggle.com/competitions/amex-default-prediction/
 These are taken from [kaggle submissions](https://www.kaggle.com/competitions/amex-default-prediction/submissions).
 | index | source                       | score | train score | valid score | comments |
 | ----- | ---------------------------- | ----- | ----------- | ----------- | -------- |
+| 4d    | v3_hp                        | 0.784 | 0.782       |             | tune for class weights, learning rates and iterations using latest features |
 | 4c    | v3_hp                        | 0.783 | 0.785       |             | tune for class weights and iterations using latest features |
 | 4b    | v3_hp                        | 0.780 | 0.778       |             | set up hp tuning for class weights using latest features (not aggregated) |
 | 9b    | v2_aggregated                | 0.786 | 0.825       | 0.786       | same as below, except with raw score |
