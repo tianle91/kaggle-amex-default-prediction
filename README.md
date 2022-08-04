@@ -10,21 +10,21 @@ https://www.kaggle.com/competitions/amex-default-prediction/
 
 # Submissions
 These are taken from [kaggle submissions](https://www.kaggle.com/competitions/amex-default-prediction/submissions).
-| index | source                       | score | train score | valid score | comments |
-| ----- | ---------------------------- | ----- | ----------- | ----------- | -------- |
-| 4d    | v3_hp                        | 0.784 | 0.782       |             | tune for class weights, learning rates and iterations using latest features |
-| 4c    | v3_hp                        | 0.783 | 0.785       |             | tune for class weights and iterations using latest features |
-| 4b    | v3_hp                        | 0.780 | 0.778       |             | set up hp tuning for class weights using latest features (not aggregated) |
-| 9b    | v2_aggregated                | 0.786 | 0.825       | 0.786       | same as below, except with raw score |
-| 9*    | v2_aggregated                | 0.578 | 0.825       | 0.786       | new aggregated features, new batched prediction method |
-| 8*    | v2_aggregated                | 0.783 | -           | 0.782       |          |
-| 7*    | use_latest_tune_label_weight | 0.780 | 0.8         | 0.783       | `negative_label_weight=2.009`achieved best valid score |
-| 6*    | use_latest+holiday           | 0.781 | 0.798       | 0.78        | `postive_label_multiplicative_factor = 0.05` |
-| 5     | use_latest+fourier           | 0.776 | 0.794       | 0.775       | `num_boost_round=200` |
-| 4     | use_latest                   | 0.773 | 0.779       | 0.777       | `is_unbalance=True` |
-| 3*    | use_aggregated               | 0.778 | 0.79        | 0.775       |          |
-| 2     | use_latest                   | 0.776 | 0.786       | 0.774       |          |
-| 1     | sample_submission.csv        | 0.019 | -           | -           | default prediction is all 0 |
+| index | source                       | score | train score | valid score | features  | method                                                |
+| ----- | ---------------------------- | ----- | ----------- | ----------- | --------- | ----------------------------------------------------- |
+| 4d    | v3_hp                        | 0.784 | 0.782       |             | `_latest` | tune for class weights, learning rates and iterations |
+| 4c    | v3_hp                        | 0.783 | 0.785       |             | `_latest` | tune for class weights and iterations                 |
+| 4b    | v3_hp                        | 0.780 | 0.778       |             | `_latest` | tune for class weights                                |
+| 9b    | v2_aggregated                | 0.786 | 0.825       | 0.786       | `_aggregated` | same as 9, but with raw score                     |
+| 9*    | v2_aggregated                | 0.578 | 0.825       | 0.786       | new `_aggregated` | new batched prediction method                 |
+| 8*    | v2_aggregated                | 0.783 | -           | 0.782       |           |                                                       |
+| 7*    | use_latest_tune_label_weight | 0.780 | 0.8         | 0.783       | `_latest` | best param `negative_label_weight=2.009`              |
+| 6*    | use_latest+holiday           | 0.781 | 0.798       | 0.78        | `_latest` | `postive_label_multiplicative_factor = 0.05`          |
+| 5     | use_latest+fourier           | 0.776 | 0.794       | 0.775       | `_latest` | `num_boost_round=200`                                 |
+| 4     | use_latest                   | 0.773 | 0.779       | 0.777       | `_latest` | `is_unbalance=True`                                   |
+| 3*    | use_aggregated               | 0.778 | 0.79        | 0.775       | `_aggregated` |                                                   |
+| 2     | use_latest                   | 0.776 | 0.786       | 0.774       | `_latest` |                                                       |
+| 1     | sample_submission.csv        | 0.019 | -           | -           |           | default prediction is all 0                           |
 
 \* Indicates that there is attached commentary.
 
