@@ -6,8 +6,7 @@ from hyperopt.pyll.base import scope
 from sklearn.model_selection import train_test_split
 
 from encoder import CategoricalToIntegerEncoders
-from format_data import (CATEGORICAL_VARIABLES, DATE_VARIABLES, ID_VARIABLES,
-                         TARGET_VARIABLE)
+from format_data import DATE_VARIABLES, ID_VARIABLES, TARGET_VARIABLE
 from hp import build_train_objective, find_best_run
 from spark_utils import SparkSessionContext
 from transform_aggregated import (SUMMARY_FEATURE_CATEGORICAL_VARIABLES,
