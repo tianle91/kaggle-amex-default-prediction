@@ -1,21 +1,18 @@
-FROM ubuntu:20.04
-RUN apt update -y
-RUN apt install -y git
+# https://github.com/ykursadkaya/pyspark-Docker
+ARG IMAGE_VARIANT=slim-buster
+ARG OPENJDK_VERSION=11
+ARG PYTHON_VERSION=3.9.8
 
-# python
-RUN apt install -y gcc libpq-dev
-RUN apt install -y python3-dev python3-pip python3-venv python3-wheel
-RUN ln -fs /usr/bin/python3 /usr/bin/python
-RUN python -m pip install -U pip wheel
-RUN echo 'alias venv="python -m venv"' >> ~/.bashrc
+FROM python:${PYTHON_VERSION}-${IMAGE_VARIANT} AS py3
+FROM openjdk:${OPENJDK_VERSION}-${IMAGE_VARIANT}
 
-# spark
-RUN apt install --no-install-recommends -y openjdk-11-jdk-headless
-ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
-RUN pip install pyspark==3.2.1
-RUN pip install pandas pyspark[sql]
-ENV PYSPARK_PYTHON=/usr/bin/python
-ENV PYSPARK_DRIVER_PYTHON=/usr/bin/python
+COPY --from=py3 / /
+
+ARG PYSPARK_VERSION=3.2.0
+RUN pip --no-cache-dir install pyspark==${PYSPARK_VERSION}
+
+# for lightgbm
+RUN apt update -y && apt install -y libgomp1
 
 # install requirements
 COPY ./requirements.txt ./
