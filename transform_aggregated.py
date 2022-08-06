@@ -31,26 +31,31 @@ def get_window_features(df: DataFrame) -> DataFrame:
     select_cols = [
         F.datediff(
             'S_2',
-            F.lag('S_2', offset=-1).over(window)
+            F.lag('S_2', offset=1).over(window)
         ).alias('S_2_days_since_previous'),
         *FEATURE_VARIABLES,
         *[
-            F.lag(
-                c, offset=-1, default=None
-            ).over(window).alias(f'{c}_previous')
+            F.lag(c, offset=1).over(window).alias(f'{c}_previous')
             for c in FEATURE_VARIABLES
         ]
     ]
+    __S_2_LAST_COL__ = '__S_2_LAST_COL__'
     out = (
         df
         .select('customer_ID', 'S_2', *select_cols)
         .join(
-            df.groupBy('customer_ID').agg(F.max('S_2').alias('S_2_last')),
+            (
+                df
+                .groupBy('customer_ID')
+                .agg(
+                    F.max('S_2').alias(__S_2_LAST_COL__)
+                )
+            ),
             on='customer_ID',
             how='inner',
         )
-        .filter(F.col('S_2') == F.col('S_2_last'))
-        .drop('S_2_last')
+        .filter(F.col('S_2') == F.col(__S_2_LAST_COL__))
+        .drop(__S_2_LAST_COL__)
     )
     out = out.select(
         *out.columns,
