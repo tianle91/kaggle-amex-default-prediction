@@ -5,13 +5,14 @@ https://www.kaggle.com/competitions/amex-default-prediction/
 # Useful
 `mlflow ui` runs the mlflow ui at [127.0.0.1:5000](http://127.0.0.1:5000)
 
-`kaggle competitions submit -c amex-default-prediction -f submission.csv -m "v3_hp"`
+`kaggle competitions submit -c amex-default-prediction -f submission.csv -m "v3_hp_aggregated"`
 
 
 # Submissions
 These are taken from [kaggle submissions](https://www.kaggle.com/competitions/amex-default-prediction/submissions).
 | index | source                       | score | train score | valid score | features  | method                                                |
 | ----- | ---------------------------- | ----- | ----------- | ----------- | --------- | ----------------------------------------------------- |
+| 10    | v3_hp_aggregated             | 0.789 | 0.783       |             | `_aggregated` | tune for class weights, learning rates and iterations |
 | 4d    | v3_hp                        | 0.784 | 0.782       |             | `_latest` | tune for class weights, learning rates and iterations |
 | 4c    | v3_hp                        | 0.783 | 0.785       |             | `_latest` | tune for class weights and iterations                 |
 | 4b    | v3_hp                        | 0.780 | 0.778       |             | `_latest` | tune for class weights                                |
