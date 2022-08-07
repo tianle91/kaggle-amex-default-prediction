@@ -10,6 +10,11 @@ https://www.kaggle.com/competitions/amex-default-prediction/
 
 # Submissions
 These are taken from [kaggle submissions](https://www.kaggle.com/competitions/amex-default-prediction/submissions).
+| index | source                       | score | best hp score | valid score | features  | method                                                |
+| ----- | ---------------------------- | ----- | ------------- | ----------- | --------- | ----------------------------------------------------- |
+| 10b   | v3_hp_aggregated |           | 0.790 | 0.792         | 0.793       | `_aggregated` fixed | same as 10                                  |
+
+
 | index | source                       | score | train score | valid score | features  | method                                                |
 | ----- | ---------------------------- | ----- | ----------- | ----------- | --------- | ----------------------------------------------------- |
 | 10    | v3_hp_aggregated             | 0.789 | 0.783       |             | `_aggregated` | tune for class weights, learning rates and iterations |
@@ -25,7 +30,7 @@ These are taken from [kaggle submissions](https://www.kaggle.com/competitions/am
 | 4     | use_latest                   | 0.773 | 0.779       | 0.777       | `_latest` | `is_unbalance=True`                                   |
 | 3*    | use_aggregated               | 0.778 | 0.79        | 0.775       | `_aggregated` |                                                   |
 | 2     | use_latest                   | 0.776 | 0.786       | 0.774       | `_latest` |                                                       |
-| 1     | sample_submission.csv        | 0.019 | -           | -           |           | default prediction is all 0                           |
+| 1     | sample_submission.csv        | 0.019 | -           | -           | all 0     |                                                       |
 
 \* Indicates that there is attached commentary.
 
