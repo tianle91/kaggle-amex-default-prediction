@@ -62,7 +62,7 @@ print(
     f'y_fit uniques: {np.unique(y_fit, return_counts=True)} '
 )
 
-X_train, X_test, y_train, y_test = train_test_split(X_fit, y_fit)
+X_train, X_test, y_train, y_test = train_test_split(X_fit, y_fit, test_size=.1)
 print(
     f'X_train.shape: {X_train.shape} '
     f'X_test.shape: {X_test.shape} '
@@ -75,7 +75,8 @@ MAX_EVALS = 100
 trials = Trials()
 space = {
     'scale_pos_weight': hyperopt.hp.uniform('class_weight', 0., 10.),
-    # lower learning rate, more iterations and more leaves
+    # https://lightgbm.readthedocs.io/en/latest/Parameters-Tuning.html#for-better-accuracy
+    'max_bin': scope.int(hyperopt.hp.quniform('max_bin', 255, 511, 1)),
     'learning_rate': hyperopt.hp.uniform('learning_rate', 0., .1),
     'num_iterations': scope.int(hyperopt.hp.quniform('num_iterations', 100, 5000, 1)),
     'num_leaves': scope.int(hyperopt.hp.quniform('num_leaves', 31, 100, 1))
