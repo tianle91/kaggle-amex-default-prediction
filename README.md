@@ -12,7 +12,8 @@ https://www.kaggle.com/competitions/amex-default-prediction/
 These are taken from [kaggle submissions](https://www.kaggle.com/competitions/amex-default-prediction/submissions).
 | index | source                       | score | best hp score | valid score | features  | method                                                |
 | ----- | ---------------------------- | ----- | ------------- | ----------- | --------- | ----------------------------------------------------- |
-| 10b   | v3_hp_aggregated |           | 0.790 | 0.792         | 0.793       | `_aggregated` fixed | same as 10                                  |
+| 10c   | v3_hp_aggregated             | 0.789 | 0.800         | 0.788       | `_aggregated` fixed | also tune for max bins                      |
+| 10b   | v3_hp_aggregated             | 0.790 | 0.792         | 0.793       | `_aggregated` fixed | same as 10                                  |
 
 
 | index | source                       | score | train score | valid score | features  | method                                                |
